@@ -6,6 +6,7 @@
 
 - 需要在 [config.json](config.json) 中将 `rbk_ip` 和 `rdscore_ip` 配置正确。
 - 需要安装[pytest](https://docs.pytest.org/en/7.1.x/index.html) 以及 [pytest-html](https://pytest-html.readthedocs.io/en/latest/index.html)
+
 ```
 pip install -U pytest
 ```
@@ -34,3 +35,9 @@ pytest test_rbk -v --html=report.html --self-contained-html
 pytest test_rdscore -v --html=report.html --self-contained-html
 ```
 最后测试结果在`report.html`中
+
+
+## APILib
+
+APILib 中 [rbklib.py](APILib/rbklib.py) 实现了机器人RBK的接口。
+APILib 中 [orderLib](APILib/orderLib.py) 实现了rdscore的接口。
