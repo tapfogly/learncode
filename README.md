@@ -14,18 +14,10 @@ pip install -U pytest
 ```
 pip install -U pytest-html
 ```
-
-## 测试文件夹名称和文件名规则
-
-pytest是python的第三方测试框架,是基于unittest的扩展框架,比unittest更简洁,更高效。使用pytest编写用例,必须遵守以下规则:
-
-1. 测试文件名必须以“test_”开头或者"_test"结尾(如:test_ab.py)
-
-2. 测试方法必须以“test_”开头。
-
-3. 测试类命名以"Test"开头。
-
 ## 运行测试用例方式
+
+在 `AutoTest` 目录下，通过控制台运行下面的指令：
+
 - 测试rbk
 ```bash
 pytest test_rbk -v --html=report.html --self-contained-html
@@ -40,4 +32,15 @@ pytest test_rdscore -v --html=report.html --self-contained-html
 ## APILib
 
 APILib 中 [rbklib.py](APILib/rbklib.py) 实现了机器人RBK的接口。
+
 APILib 中 [orderLib](APILib/orderLib.py) 实现了rdscore的接口。
+
+## 测试文件夹名称和文件名规则
+
+[pytest](https://docs.pytest.org/en/7.1.x/index.html)是 python 的第三方测试框架,是基于 unittest 的扩展框架,比 unittest 更简洁,更高效。使用 pytest 编写用例,必须遵守以下规则:
+
+1. 测试文件名必须以 `test_` 开头或者 `_test` 结尾(如: test_ab.py )
+
+2. 测试方法必须以 `test_` 开头。
+
+3. 测试类命名以 `Test` 开头。
