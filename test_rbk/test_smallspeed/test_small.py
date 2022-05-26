@@ -41,7 +41,7 @@ def test_small():
             dt = time.time() - t0
             if dt > 10: # 任务持续时间
                 r.cancelTask()
-                assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
+                assert False, "robot cannot move"
     assert True
 if __name__ == "__main__":
     pytest.main(["-v", "--html=report.html", "--self-contained-html"])
