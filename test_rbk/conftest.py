@@ -4,7 +4,6 @@ from APILib.rbklib import *
 import json
 
 def pytest_configure(config):
-    print(rbklib)
     r = rbklib(ip = getIP())
     data = r.getStatusInfo()
     print(json.dumps(data, indent=1))

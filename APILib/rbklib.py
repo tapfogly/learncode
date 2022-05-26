@@ -245,11 +245,26 @@ class rbklib:
         print(task)
         msg = packMasg(1,3066,task)
         so.send(msg)
+    def modifyParam(self, data:dict()):
+        """永久修改参数配置里面的参数
 
+        Args:
+            data (dict): 格式如下
+            {
+                "MoveFactory": {
+                    "3DCameraHole": true
+                }
+            }
+        """
+        so = self.so_19207
+        msg = packMasg(1,4101, data)
+        so.send(msg)        
 if __name__ == "__main__":
-    print(getIP())
-    # r = rbklib(ip = "192.168.133.128")
-    # r.lock()
+    # print(getIP())
+    r = rbklib(ip = "192.168.133.132")
+    r.lock()
+    data = {"RBKSim":{"RBKSimMinVx":0.5}}
+    r.modifyParam(data = data)
     # pos = {"x":-0.525, "y":-0.06, "angle":0}
     # r.moveRobot(pos=pos)
     # time.sleep(1.0)
