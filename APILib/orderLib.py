@@ -6,13 +6,16 @@ import os
 import time
 import subprocess
 import multiprocessing
+from pathlib import Path
 
 def getServerAddr()->str:
     """获取服务器的地址
     Returns:
         str: 服务器地址
     """
-    with open("config.json", "r") as f:
+    p = Path(os.path.dirname(__file__))
+    config_path = Path(p, "../config.json")
+    with open(config_path, "r") as f:
         j = json.load(f)
         return j.get("rdscore_addr","")
 
@@ -300,7 +303,9 @@ class OrderLib:
         r = requests.post(self.ip+"/gotoSiteCancel", data=datas, headers=_orderLif_headers)
         return r
     def uploadScene(self, name:str=""):
-        with open(name, 'rb') as f:
+        p = Path(os.path.dirname(__file__))
+        scene_path = Path(p,"../"+name)
+        with open(scene_path, 'rb') as f:
             datas = f.read()        
             r = requests.post(self.ip+"/uploadScene", data= datas)
             print(r.status_code)
@@ -314,7 +319,22 @@ class OrderLib:
                 status = out["state"]
             print("waitForOrderFinish", uuid, out , status)
             time.sleep(1)    
-    
+
+    def waitForOrderFinishTimeout(self, uuid, timeout=30):
+        status = "RUNNING"
+        time_elapsed = 0
+        while status != "FINISHED" and status != "STOPPED" :
+            out = self.orderDetails(uuid)
+            if type(out) is dict and "state" in out:
+                status = out["state"]
+            print("waitForOrderFinish", uuid, out , status)
+            time.sleep(1)    
+            time_elapsed+=1
+            print(time_elapsed)
+            if time_elapsed > timeout:
+                print("waitForOrderFinish", uuid, out, status, "TIMEOUT")
+                return
+ 
     def clearRobotAllError(self, name):
         if type(name) is not list:
             if name == "":
