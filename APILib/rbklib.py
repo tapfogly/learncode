@@ -259,6 +259,13 @@ class rbklib:
         so = self.so_19207
         msg = packMasg(1,4101, data)
         so.send(msg)        
+
+    def translate(self, data):
+        """机器人平动"""
+        so = self.so_19206
+        msg = packMasg(1,3055,data)
+        so.send(msg)
+
 if __name__ == "__main__":
     # print(getIP())
     r = rbklib(ip = "192.168.133.132")
