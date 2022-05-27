@@ -319,7 +319,22 @@ class OrderLib:
                 status = out["state"]
             print("waitForOrderFinish", uuid, out , status)
             time.sleep(1)    
-    
+
+    def waitForOrderFinishTimeout(self, uuid, timeout=30):
+        status = "RUNNING"
+        time_elapsed = 0
+        while status != "FINISHED" and status != "STOPPED" :
+            out = self.orderDetails(uuid)
+            if type(out) is dict and "state" in out:
+                status = out["state"]
+            print("waitForOrderFinish", uuid, out , status)
+            time.sleep(1)    
+            time_elapsed+=1
+            print(time_elapsed)
+            if time_elapsed > timeout:
+                print("waitForOrderFinish", uuid, out, status, "TIMEOUT")
+                return
+ 
     def clearRobotAllError(self, name):
         if type(name) is not list:
             if name == "":
