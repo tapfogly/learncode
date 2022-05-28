@@ -3,7 +3,7 @@ import json
 import time
 import struct
 import math
-
+import os
 PACK_FMT_STR = '!BBHLH6s'
 def getIP()->str:
     """获取机器人ip
@@ -11,7 +11,10 @@ def getIP()->str:
     Returns:
         str: ip
     """
-    with open("config.json", "r") as f:
+    p = os.path.dirname(__file__)
+    p = os.path.dirname(p)
+    config_path = os.path.join(p, "config.json")
+    with open(config_path, "r") as f:
         j = json.load(f)
         return j.get("rbk_ip","")
 
@@ -267,11 +270,11 @@ class rbklib:
         so.send(msg)
 
 if __name__ == "__main__":
-    # print(getIP())
-    r = rbklib(ip = "192.168.133.132")
-    r.lock()
-    data = {"RBKSim":{"RBKSimMinVx":0.5}}
-    r.modifyParam(data = data)
+    print(getIP())
+    # r = rbklib(ip = "192.168.133.132")
+    # r.lock()
+    # data = {"RBKSim":{"RBKSimMinVx":0.5}}
+    # r.modifyParam(data = data)
     # pos = {"x":-0.525, "y":-0.06, "angle":0}
     # r.moveRobot(pos=pos)
     # time.sleep(1.0)

@@ -233,13 +233,20 @@ class OrderLib:
         r = requests.post(self.ip+"/terminate", data=datas, headers=_orderLif_headers)
         return datas        
 
-    def terminateId(self, order_id, disableVehicle):
-        datas = json.dumps(
-        {
-            "id":order_id,
-            "disableVehicle": disableVehicle
-        }
-        )
+    def terminateId(self, order_id, disableVehicle = None):
+        if isinstance(disableVehicle, bool):
+            datas = json.dumps(
+            {
+                "id":order_id,
+                "disableVehicle": disableVehicle
+            }
+            )
+        else:
+            datas = json.dumps(
+            {
+                "id":order_id
+            }
+            )            
         r = requests.post(self.ip+"/terminate", data=datas, headers=_orderLif_headers)
         return datas               
         
@@ -352,7 +359,29 @@ class OrderLib:
     def getPing(self):
         r = requests.get(self.ip+"/ping")
         return r.json()
+    
+    def robotsStatus(self):
+        r = requests.get(self.ip +"/robotsStatus")
+        return r.json()
+    
+    def robotStatus(self, vehicle_id:str):
+        data = dict()
+        rs = self.robotsStatus()
+        for r in rs["report"]:
+            if r["vehicle_id"] == vehicle_id:
+                data = r
+                break
+        return data
+    def updateSimRobotState(self, datas:dict):
+        """设置仿真机器人参数
 
+        Args:
+            datas (dict): 这个json见文档 
+            https://books.seer-group.com/public/rdscore/master/zh/api/http/robot/updateSimRobotState.html
+            https://seer-group.yuque.com/pf4yvd/gp9mgx/xmyicq
+        """
+        r = requests.post(self.ip+"/updateSimRobotState", data=datas, headers=_orderLif_headers)
+        return r
 
 if __name__ == "__main__":
     print(getServerAddr())
