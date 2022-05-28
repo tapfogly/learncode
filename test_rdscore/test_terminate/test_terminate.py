@@ -22,15 +22,14 @@ def teardown_module():
     pass
 
 def init_pos():
-    ORDER.dispatchable(name = "AMB-01")
-    time.sleep(1)
     ORDER.terminateAll(vehicle = "AMB-01")
+    ORDER.dispatchable(name = "AMB-01")
     data = {
         "vehicle_id":"AMB-01",
         "position_by_name":"AP1"
     }
     ORDER.updateSimRobotState(json.dumps(data))
-    time.sleep(2.0)
+    ORDER.locked()
 
 def test_1():
     """ 测试停止一个的运行的订单
@@ -45,7 +44,7 @@ def test_1():
     o1 = ORDER.orderDetails(orderId = oid1)
     o2 = ORDER.orderDetails(orderId = oid2)
     amb_01 = ORDER.robotStatus("AMB-01")
-    ORDER.terminateIdList(ids = [o1, o2])
+    ORDER.terminateIdList(ids = [oid1, oid2])
     try:
         if o1["state"]  == "STOPPED"\
             and ( o2["state"] == "CREATED"  or o2["state"] == "TOBEDISPATCHED") \
@@ -71,7 +70,7 @@ def test_2():
     o1 = ORDER.orderDetails(orderId = oid1)
     o2 = ORDER.orderDetails(orderId = oid2)
     amb_01 = ORDER.robotStatus("AMB-01")
-    ORDER.terminateIdList(ids = [o1, o2])
+    ORDER.terminateIdList(ids = [oid1, oid2])
     try:
         if o1["state"]  == "RUNNING"\
             and o2["state"] == "STOPPED"\
@@ -97,7 +96,7 @@ def test_3():
     o1 = ORDER.orderDetails(orderId = oid1)
     o2 = ORDER.orderDetails(orderId = oid2)
     amb_01 = ORDER.robotStatus("AMB-01")
-    ORDER.terminateIdList(ids = [o1, o2])
+    ORDER.terminateIdList(ids = [oid1, oid2])
     try:
         if o1["state"]  == "RUNNING"\
             and o2["state"] == "STOPPED"\
@@ -124,7 +123,6 @@ def test_4():
     o1 = ORDER.orderDetails(orderId = oid1)
     o2 = ORDER.orderDetails(orderId = oid2)
     amb_01 = ORDER.robotStatus("AMB-01")
-    ORDER.terminateIdList(ids = [o1, o2])
     try:
         if o1["state"]  == "RUNNING"\
             and o2["state"] == "STOPPED"\
@@ -138,4 +136,4 @@ def test_4():
         assert False, "except: {}".format(str(e))
 
 if __name__ == "__main__":
-    pytest.main(["-k test_1","-v", "--html=report.html", "--self-contained-html"])
+    pytest.main(["-v", "-x", "-s", "--html=report.html", "--self-contained-html"])

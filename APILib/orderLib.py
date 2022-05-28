@@ -6,15 +6,15 @@ import os
 import time
 import subprocess
 import multiprocessing
-from pathlib import Path
 
 def getServerAddr()->str:
     """获取服务器的地址
     Returns:
         str: 服务器地址
     """
-    p = Path(os.path.dirname(__file__))
-    config_path = Path(p, "../config.json")
+    p = os.path.dirname(__file__)
+    p = os.path.dirname(p)
+    config_path = os.path.join(p, "config.json")
     with open(config_path, "r") as f:
         j = json.load(f)
         return j.get("rdscore_addr","")
@@ -310,8 +310,9 @@ class OrderLib:
         r = requests.post(self.ip+"/gotoSiteCancel", data=datas, headers=_orderLif_headers)
         return r
     def uploadScene(self, name:str=""):
-        p = Path(os.path.dirname(__file__))
-        scene_path = Path(p,"../"+name)
+        p = os.path.dirname(__file__)
+        p = os.path.dirname(p)
+        scene_path = os.path.join(p,name)
         with open(scene_path, 'rb') as f:
             datas = f.read()        
             r = requests.post(self.ip+"/uploadScene", data= datas)
