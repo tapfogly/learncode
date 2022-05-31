@@ -135,5 +135,22 @@ def test_4():
     except Exception as e:
         assert False, "except: {}".format(str(e))
 
+def test_5():
+    """测试车子处于不占用资源状态，清除当前车所有订单时，车子不需要位于不可解单状态
+    """
+    init_pos()
+    ORDER.undispatchable_ignore("AMB-01", True)
+    time.sleep(1.0)
+    ORDER.terminateAll(vehicle="AMB-01")
+    amb_01 = ORDER.robotStatus("AMB-01")
+    try:
+        status = amb_01["undispatchable_reason"]["dispatchable_status"]
+        if status == 2:
+            assert True
+        elif status == 1 or status == 0:
+            assert False, "status {} error!".format(status)
+    except Exception as e:
+        assert False, "except: {}".format(str(e))
+
 if __name__ == "__main__":
-    pytest.main(["-v", "-x", "-s", "--html=report.html", "--self-contained-html"])
+    pytest.main(["-k test_5", "-v", "-x", "-s", "--html=report.html", "--self-contained-html"])
