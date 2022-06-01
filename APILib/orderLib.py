@@ -401,15 +401,35 @@ class OrderLib:
                 }
             }
         """
-        print(data)
         self.rbk.modifyParam(data)
     
     def recoveryParam(self):
         self.rbk.recoveryParam()
+    
+    def disableDoor(self, names:list, disabled:bool):
+        datas = json.dumps(
+            {
+            "names": names,
+            "disabled": disabled
+            }
+        )
+        r = requests.post(self.ip+"/disableDoor", data=datas, headers=_orderLif_headers)
+        return r
 
+    def disableLift(self, names:list, disabled:bool):
+        datas = json.dumps(
+            {
+            "names": names,
+            "disabled": disabled
+            }
+        )
+        r = requests.post(self.ip+"/disableLift", data=datas, headers=_orderLif_headers)
+        return r
 if __name__ == "__main__":
     order = OrderLib(getServerAddr())
-    order.recoveryParam()
+    order.disableDoor(names = ["Door-01"], disabled = False)
+    order.disableLift(names = ["Lift-01"], disabled = False)
+    # order.recoveryParam()
     # data = {
     #     "RDSDispatcher":{
     #         "DelayFinishTime":1
