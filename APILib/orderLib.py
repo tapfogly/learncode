@@ -80,6 +80,9 @@ class OrderLib:
         self.tcp_ip = self.tcp_ip.split(":")[0]
         self.rbk = rbklib.rbklib(self.tcp_ip, True)
 
+    def __del__(self):
+        self.rbk.__del__()
+        
     def selectOrder(self, order_id):
         r = requests.get(self.ip + "/orderDetails/{}".format(order_id), headers=_orderLif_headers)
         return r.json()

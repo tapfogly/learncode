@@ -51,21 +51,45 @@ def normalize_theta(theta):
 class rbklib:
     def __init__(self, ip, core_flag = False) -> None:
         self.ip = ip
-        self.so_19204 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.so_19204.connect((self.ip, 19204))
-        self.so_19204.settimeout(5)
+        try:
+            self.so_19204 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.so_19204.connect((self.ip, 19204))
+            self.so_19204.settimeout(5)
+        except:
+            self.so_19204 = None
+        print("core_flag", core_flag)
         if core_flag == False:
-            self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.so_19205.connect((self.ip, 19205))
-            self.so_19205.settimeout(5)
+            try:
+                self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.so_19205.connect((self.ip, 19205))
+                self.so_19205.settimeout(5)
+            except:
+                self.so_19205 = None
+            try:
+                self.so_19206 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.so_19206.connect((self.ip, 19206))
+                self.so_19206.settimeout(5)
+            except:
+                self.so_19205 = None
+        else:
+            self.so_19205 = None
+            self.so_19206 = None
+        try:
+            self.so_19207 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.so_19207.connect((self.ip, 19207))
+            self.so_19207.settimeout(5)
+        except:
+            self.so_19207 = None
 
-            self.so_19206 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.so_19206.connect((self.ip, 19206))
-            self.so_19206.settimeout(5)
-
-        self.so_19207 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.so_19207.connect((self.ip, 19207))
-        self.so_19207.settimeout(5)
+    def __del__(self):
+        if self.so_19204 != None: 
+            self.so_19204.close()
+        if self.so_19207 != None:
+            self.so_19207.close()
+        if self.so_19205 != None:
+            self.so_19206.close()
+        if self.so_19206 != None:
+            self.so_19207.close()
 
     def query(self, msg):
         so = self.so_19204
