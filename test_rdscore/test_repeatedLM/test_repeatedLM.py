@@ -41,6 +41,7 @@ def teardown_module():
 def test_1():
     """ 检查是否有52122的报错
     """
+    init_pos()
     rs = ORDER.robotsStatus()
     for e in rs["alarms"]["errors"]:
         if e["code"] == 52122:
