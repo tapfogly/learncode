@@ -49,19 +49,19 @@ def normalize_theta(theta):
         theta = theta + 2 * math.pi
     return theta
 class rbklib:
-    def __init__(self, ip) -> None:
+    def __init__(self, ip, core_flag = False) -> None:
         self.ip = ip
         self.so_19204 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.so_19204.connect((self.ip, 19204))
         self.so_19204.settimeout(5)
+        if core_flag == False:
+            self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.so_19205.connect((self.ip, 19205))
+            self.so_19205.settimeout(5)
 
-        self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.so_19205.connect((self.ip, 19205))
-        self.so_19205.settimeout(5)
-
-        self.so_19206 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.so_19206.connect((self.ip, 19206))
-        self.so_19206.settimeout(5)
+            self.so_19206 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.so_19206.connect((self.ip, 19206))
+            self.so_19206.settimeout(5)
 
         self.so_19207 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.so_19207.connect((self.ip, 19207))

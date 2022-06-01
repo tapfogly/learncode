@@ -6,6 +6,7 @@ import os
 import time
 import subprocess
 import multiprocessing
+import rbklib
 
 def getServerAddr()->str:
     """获取服务器的地址
@@ -75,7 +76,9 @@ def getLeasetLog(fdir = None):
 class OrderLib:
     def __init__(self, ip) -> None:
         self.ip = ip
-
+        self.tcp_ip = self.ip.split("/")[-1]
+        self.tcp_ip = self.tcp_ip.split(":")[0]
+        self.rbk = rbklib.rbklib(self.tcp_ip, True)
 
     def selectOrder(self, order_id):
         r = requests.get(self.ip + "/orderDetails/{}".format(order_id), headers=_orderLif_headers)
@@ -384,8 +387,28 @@ class OrderLib:
         r = requests.post(self.ip+"/updateSimRobotState", data=datas, headers=_orderLif_headers)
         return r
 
+    def modifyParam(self, data:dict()):
+        """永久修改参数配置里面的参数
+
+        Args:
+            data (dict): 格式如下
+            {
+                "MoveFactory": {
+                    "3DCameraHole": true
+                }
+            }
+        """
+        print(data)
+        self.rbk.modifyParam(data)
+
 if __name__ == "__main__":
-    print(getServerAddr())
+    order = OrderLib(getServerAddr())
+    data = {
+        "RDSDispatcher":{
+            "DelayFinishTime":1
+        }
+    }
+    order.modifyParam(data)
     # order = OrderLib("http://127.0.0.1:8088")
     # order.gotoOrder(binTask="load", location="3-8", vehicle="AMB-05",complete=True, goodsId="hello")
     # order.gotoOrder(binTask="load", location="3-8", vehicle="AMB-05",complete=True, goodsId="world")
