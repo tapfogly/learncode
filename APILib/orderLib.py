@@ -400,15 +400,19 @@ class OrderLib:
         """
         print(data)
         self.rbk.modifyParam(data)
+    
+    def recoveryParam(self):
+        self.rbk.recoveryParam()
 
 if __name__ == "__main__":
     order = OrderLib(getServerAddr())
-    data = {
-        "RDSDispatcher":{
-            "DelayFinishTime":1
-        }
-    }
-    order.modifyParam(data)
+    order.recoveryParam()
+    # data = {
+    #     "RDSDispatcher":{
+    #         "DelayFinishTime":1
+    #     }
+    # }
+    # order.modifyParam(data)
     # order = OrderLib("http://127.0.0.1:8088")
     # order.gotoOrder(binTask="load", location="3-8", vehicle="AMB-05",complete=True, goodsId="hello")
     # order.gotoOrder(binTask="load", location="3-8", vehicle="AMB-05",complete=True, goodsId="world")

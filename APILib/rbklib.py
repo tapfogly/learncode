@@ -21,7 +21,7 @@ def getIP()->str:
 def packMasg(reqId, msgType, msg={}):
     msgLen = 0
     jsonStr = ""
-    if isinstance(msg, dict):
+    if isinstance(msg, dict) or isinstance(msg, list):
         jsonStr = json.dumps(msg)
     else:
         jsonStr = msg
@@ -261,7 +261,13 @@ class rbklib:
         """
         so = self.so_19207
         msg = packMasg(1,4101, data)
-        so.send(msg)        
+        so.send(msg)     
+    
+    def recoveryParam(self):
+        data = []
+        so = self.so_19207
+        msg = packMasg(1,4102, data)
+        so.send(msg)               
 
     def translate(self, data):
         """机器人平动"""
