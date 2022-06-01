@@ -87,9 +87,9 @@ class rbklib:
         if self.so_19207 != None:
             self.so_19207.close()
         if self.so_19205 != None:
-            self.so_19206.close()
+            self.so_19205.close()
         if self.so_19206 != None:
-            self.so_19207.close()
+            self.so_19206.close()
 
     def query(self, msg):
         so = self.so_19204
