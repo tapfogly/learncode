@@ -46,6 +46,11 @@ def test_2():
     """ 测试能否正常运行
     """
     init_pos()
+    ORDER.recoveryParam()
+    ORDER.modifyParam({"RDSDispatcher":{
+        "G-MAPF":True,
+        "G-MAPF-Vision":35,
+        }})
     oid1 = ORDER.gotoOrder(vehicle="AMB-01",location="AP7", complete=True)
     start_t = time.time()
     while True:
