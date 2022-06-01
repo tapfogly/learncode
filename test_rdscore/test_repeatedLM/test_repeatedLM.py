@@ -1,7 +1,12 @@
 # order_issue_pool#394 的测试用例
 import json
 import sys
-sys.path.append("../..")
+import os
+p = os.path.abspath(__file__)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+sys.path.append(p)
 from APILib.orderLib import *
 import time
 from multiprocessing import freeze_support
