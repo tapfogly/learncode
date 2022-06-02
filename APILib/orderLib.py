@@ -1,7 +1,6 @@
 import json
 import requests
 import uuid
-import requests
 import os
 import time
 import subprocess
