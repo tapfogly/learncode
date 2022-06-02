@@ -60,7 +60,7 @@ class rbklib:
         self.so_19204 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.so_19204.connect((self.ip, 19204))
         self.so_19204.settimeout(5)
-        if core_flag == False:
+        if not core_flag:
             # 机器人控制 socket
             self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.so_19205.connect((self.ip, 19205))
@@ -327,7 +327,7 @@ class rbklib:
         if msg is not None:
             # 如果报文体不为空，则使用报文体
             if isinstance(msg, (dict, list)):
-                # 如果报文体是dict或者list，则转换成json格式,并且把报文体转换成字节
+                # 如果报文体是dict或者list，则转换成字节
                 body = bytearray(json.dumps(msg), "ascii")
             else:
                 # 如果报文体是bytes或者bytearray，则直接使用
@@ -348,14 +348,14 @@ class rbklib:
         else:
             print(f"报文体:\t{body[:1000]}")
             if msgLen > 1000:
-                print("\t...")
+                print("...")
         print()
         ################################################################################################################
         # 发送报文
         if msgLen > 0:
             rawMsg += body
         so.send(rawMsg)
-        # 接收报文
+        # 接收报文头
         headData = so.recv(16)
         # 解析报文头
         header = struct.unpack(PACK_FMT_STR, headData)
@@ -378,7 +378,7 @@ class rbklib:
         print(f"报文体长度:\t{header[3]}\t{header[3]:#010X}")
         print(f"报文体:\t{recvData[:1000]}")
         if header[3] > 1000:
-            print("\t...")
+            print("...")
         print()
         ################################################################################################################
         return header, recvData
