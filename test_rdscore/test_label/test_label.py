@@ -1,9 +1,24 @@
 import pytest
 import sys
-sys.path.append("../..")
+import os
+p = os.path.abspath(__file__)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+sys.path.append(p)
 from APILib.orderLib import *
 
 core = OrderLib(getServerAddr())
+
+def setup_module():
+    """执行这个脚本的用例前需要的准备内容
+    """
+    global core
+    p = os.path.abspath(__file__)
+    p = os.path.dirname(p)
+    p = os.path.join(p, "rds_20220601233537.zip")
+    core.uploadScene(p)
+    time.sleep(5)
 
 def test_without_label():
     '''
