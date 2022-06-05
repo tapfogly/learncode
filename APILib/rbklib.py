@@ -216,6 +216,11 @@ class rbklib:
         self.confirmLoc()
 
     def moveRobot(self, pos: dict):
+        """_summary_
+
+        Args:
+            pos (dict): pos = {"x":-12.178, "y":-3.183, "angle":0.} ,angle unit is degree
+        """
         sim_pos = {"sim": {"setPos": pos}}
         self.sendTask(sim_pos)
         self.reloc(pos=pos)
@@ -223,6 +228,21 @@ class rbklib:
         self.cancelLoc()
         time.sleep(1)
         self.confirmLoc()
+    
+    def setSimLaser(self, x:list, y:list):
+        if len(x) != len(y):
+            return
+        if len(x) == 0:
+            return
+        pos = []
+        for a,b in zip(x,y):
+            pos.append([a,b])
+        sim_laser = {"sim":{"setLaser":pos}}
+        self.sendTask(sim_laser)
+
+    def clearSimLaser(self):
+        sim_laser = {"sim":{"clearLaser":True}}
+        self.sendTask(sim_laser)
 
     def lock(self):
         so = self.so_19207
