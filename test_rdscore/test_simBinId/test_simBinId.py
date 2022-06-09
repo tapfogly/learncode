@@ -10,7 +10,10 @@ ORDER = OrderLib(getServerAddr())
 
 def setup_module():
     global ORDER
-    ORDER.uploadScene("test_rdscore/test_simBinId/scene.zip")
+    p = os.path.abspath(__file__)
+    p = os.path.dirname(p)
+    p = os.path.join(p, "scene.zip")
+    ORDER.uploadScene(p)
     time.sleep(5)
 
 
@@ -21,7 +24,7 @@ def test_simBinId():
     oid = ORDER.gotoOrder(location="A008-1")
     time.sleep(2)
     o = ORDER.orderDetails(orderId=oid)
-    ORDER.waitForOrderFinishTimeout(oid, 20)
+    ORDER.waitForOrderFinishTimeout(oid, 200)
     o = ORDER.orderDetails(orderId=oid)
     assert o['state'] == "FINISHED"
 
