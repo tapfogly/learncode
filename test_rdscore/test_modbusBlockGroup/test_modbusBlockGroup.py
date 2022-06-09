@@ -14,8 +14,16 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
-CORE = OrderLib(getServerAddr())
-
+core = OrderLib(getServerAddr())
+def setup_module():
+    """执行这个脚本的用例前需要的准备内容
+    """
+    global core
+    p = os.path.abspath(__file__)
+    p = os.path.dirname(p)
+    p = os.path.join(p, "rds_20220602172845.zip")
+    core.uploadScene(p)
+    time.sleep(5)
 
 def test_read_block_group_status():
     '''
