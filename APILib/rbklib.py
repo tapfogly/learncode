@@ -1,3 +1,4 @@
+from datetime import datetime
 import socket
 import json
 import time
@@ -374,7 +375,7 @@ class rbklib:
         ################################################################################################################
         # 打印socket信息
         print("*" * 20, "socket信息", "*" * 20)
-        print(f"socket:\tserver{so.getpeername()},local{so.getsockname()}")
+        print(f"{'socket:':>10}\tserver{so.getpeername()},local{so.getsockname()}")
         print()
         ################################################################################################################
         # 封装报文
@@ -393,14 +394,15 @@ class rbklib:
         ################################################################################################################
         # 打印请求报文信息
         print("*" * 20, "请求信息", "*" * 20)
-        print(f"报文类型:\t{msgType}\t{msgType:#06X}")
-        print(f"序号:\t{reqId}\t{reqId:#06X}")
-        print(f"报文头:\t{rawMsg.hex(' ')}")
-        print(f"报文体长度:\t{msgLen}\t{msgLen:#010X}")
+        print(f"{'时间:':　>6}\t", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), sep='')
+        print(f"{'报文类型:':　>6}\t{msgType}\t{msgType:#06X}")
+        print(f"{'序号:':　>6}\t{reqId}\t{reqId:#06X}")
+        print(f"{'报文头:':　>6}\t{rawMsg.hex(' ')}")
+        print(f"{'报文体长度:':　>6}\t{msgLen}\t{msgLen:#010X}")
         if msgLen == 0:
-            print("报文体:\t无")
+            print(f"{'报文体:':　>6}\t无")
         else:
-            print(f"报文体:\t{body[:1000]}")
+            print(f"{'报文体:':　>6}\t{body[:1000]}")
             if msgLen > 1000:
                 print("...")
         print()
@@ -426,11 +428,12 @@ class rbklib:
         ################################################################################################################
         # 打印响应报文信息
         print("*" * 20, "响应信息", "*" * 20)
-        print(f"报文类型:\t{header[4]}\t{header[4]:#06X}")
-        print(f"序号:\t{header[2]}\t{header[2]:#06X}")
-        print(f"报文头:\t{headData.hex(' ')}")
-        print(f"报文体长度:\t{header[3]}\t{header[3]:#010X}")
-        print(f"报文体:\t{recvData[:1000]}")
+        print(f"{'时间:':　>6}\t", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), sep='')
+        print(f"{'报文类型:':　>6}\t{header[4]}\t{header[4]:#06X}")
+        print(f"{'序号:':　>6}\t{header[2]}\t{header[2]:#06X}")
+        print(f"{'报文头:':　>6}\t{headData.hex(' ')}")
+        print(f"{'报文体长度:':　>6}\t{header[3]}\t{header[3]:#010X}")
+        print(f"{'报文体:':　>6}\t{recvData[:1000]}")
         if header[3] > 1000:
             print("...")
         print()
