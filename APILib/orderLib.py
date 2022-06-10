@@ -220,14 +220,25 @@ class OrderLib:
         return out
 
     def terminateAll(self,vehicle):
-        datas = json.dumps(
-        {
-            "vehicles":[vehicle],
-            "clearAll":True
-        }
-        )
-        r = requests.post(self.ip+"/terminate", data=datas, headers=_orderLif_headers)
-        return datas
+        if isinstance(vehicle, str):
+            datas = json.dumps(
+            {
+                "vehicles":[vehicle],
+                "clearAll":True
+            }
+            )
+            r = requests.post(self.ip+"/terminate", data=datas, headers=_orderLif_headers)
+            return datas
+        if isinstance(vehicle, list):
+            datas = json.dumps(
+            {
+                "vehicles":vehicle,
+                "clearAll":True
+            }
+            )
+            r = requests.post(self.ip+"/terminate", data=datas, headers=_orderLif_headers)
+            return datas
+        return "wrong vehicle {}".format(vehicle)
 
     def terminateIdList(self, ids):
         datas = json.dumps(

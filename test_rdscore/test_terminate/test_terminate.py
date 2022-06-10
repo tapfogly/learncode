@@ -153,4 +153,4 @@ def test_5():
         assert False, "except: {}".format(str(e))
 
 if __name__ == "__main__":
-    pytest.main(["-k test_5", "-v", "-x", "-s", "--html=report.html", "--self-contained-html"])
+    pytest.main(["-v", "-x", "-s", "--html=report.html", "--self-contained-html"])

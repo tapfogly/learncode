@@ -184,7 +184,7 @@ class rbklib:
                 jsonDataLen -= len(recv)
                 if jsonDataLen < readSize:
                     readSize = jsonDataLen
-            print(json.dumps(json.loads(data), indent=1))
+            # print(json.dumps(json.loads(data), indent=1))
             dataall += data
             print(' '.join('{:02X}'.format(x) for x in dataall))
         except socket.timeout:
@@ -1768,8 +1768,9 @@ class rbklib:
 
 
 if __name__ == "__main__":
-    print(getIP())
-    # r = rbklib(ip = "192.168.133.132")
+    r = rbklib(ip = "192.168.133.135")
+    # r.robot_config_uploadmap_req(mapPath = "F:/SDK/rbk/AutoTest/test_rbk/test_avoid/aps-d2-saw.smap")
+    r.robot_control_loadmap_req(map_name = "aps-d2-saw")
     # r.lock()
     # data = {"RBKSim":{"RBKSimMinVx":0.5}}
     # r.modifyParam(data = data)
