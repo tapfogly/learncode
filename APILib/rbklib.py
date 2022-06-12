@@ -6,6 +6,7 @@ import struct
 import math
 import os
 from typing import Any, Union
+import time
 
 PACK_FMT_STR = '!BBHLH6s'
 
@@ -344,6 +345,28 @@ class rbklib:
         so = self.so_19206
         msg = packMasg(1, 3055, data)
         so.send(msg)
+    
+    def waitForTaskFinished(self, maxTime:float) -> bool:
+        """等待当前任务完成
+
+        Args:
+            maxTime (_type_): 超时时间
+
+        Returns:
+            bool: 如果大于超时时间或者非正在执行，则任务失败
+        """
+        t0 = time.time()
+        while True:
+            time.sleep(0.5)
+            ts = self.getTaskStatus()
+            if ts["task_status"] == 4:
+                return True
+            elif ts["task_status"] != 2:
+                return False
+            dt = time.time() - t0
+            if dt > maxTime:
+                print("exceed maxTime {}".format(maxTime))
+                return False
 
     def request(self, msgType: int, reqId: int = 1, msg: Union[dict[str, Any], list, bytearray, bytes] = None,
                 sock: socket.socket = None) -> tuple[tuple, bytes]:
