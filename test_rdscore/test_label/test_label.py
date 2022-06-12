@@ -66,7 +66,7 @@ def test_label_nonexistent():
     detail = core.orderDetails(order_id)
     print(detail)
     assert detail['state'] == 'STOPPED'
-    assert detail['errors'][0]['code'] == 60012
+    assert detail['errors'][0]['code'] == 60014
 
 def test_label_group_conflict():
     '''
@@ -86,6 +86,24 @@ def test_label_group_conflict():
     detail = core.orderDetails(order_id)
     assert detail['state'] == 'STOPPED'
     assert detail['errors'][0]['code'] == 60013
+
+def test_no_label_group():
+    '''
+    不指定label 和 group
+    '''
+    order_id = str(uuid.uuid1())
+    order = {"id": order_id, "complete": True, "blocks": [
+        {"blockId": str(uuid.uuid1()), "location": "AP28",
+         "operation": "JackLoad",
+         },
+        {"blockId": str(uuid.uuid1()), "location": "AP29",
+         "operation": "JackUnload",
+         },
+    ]}
+    requests.post(f"{core.ip}/setOrder", data=json.dumps(order))
+    core.waitForOrderFinish(order_id)
+    detail = core.orderDetails(order_id)
+    assert detail['state'] == 'FINISHED'
 
 # simple order
 
@@ -127,7 +145,7 @@ def test_label_nonexistent_simple_order():
     detail = core.orderDetails(order_id)
     print(detail)
     assert detail['state'] == 'STOPPED'
-    assert detail['errors'][0]['code'] == 60012
+    assert detail['errors'][0]['code'] == 60014
 
 def test_label_group_conflict_simple_order():
     '''
@@ -141,8 +159,16 @@ def test_label_group_conflict_simple_order():
     assert detail['state'] == 'STOPPED'
     assert detail['errors'][0]['code'] == 60013
 
-
-
+def test_no_label_and_group_conflict_simple_order():
+    '''
+    不指定label 和 group
+    '''
+    order_id = str(uuid.uuid1())
+    order = {"id": order_id, "fromLoc": "WS-1-8", "toLoc": "WS-1-10"   }
+    requests.post(f"{core.ip}/setOrder", data=json.dumps(order))
+    core.waitForOrderFinish(order_id)
+    detail = core.orderDetails(order_id)
+    assert detail['state'] == 'FINISHED'
 
 if __name__ == "__main__":
     pytest.main(["-v", "--html=report.html", "--self-contained-html"])
