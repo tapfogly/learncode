@@ -92,7 +92,8 @@ class OrderLib:
     keyRoute = None,
     sleepTime = None,
     priority = None,
-    keyTask = None):
+    keyTask = None,
+    label = None):
         uuid = getUUID()
         if type(vehicle) is str:
             uuid = vehicle+":"+ uuid
@@ -116,6 +117,7 @@ class OrderLib:
                 "id": uuid,
                 "vehicle": ("" if type(vehicle) is not str else vehicle),
                 "group": ("" if type(group) is not str else group),
+                "label": ("" if type(label) is not str else label),
                 "keyRoute" :(keyRoute if isinstance(keyRoute,str) or isinstance(keyRoute, list) else ""),
                 "keyTask":("" if type(keyTask) is not str else keyTask)
             }
@@ -129,7 +131,8 @@ class OrderLib:
                 "vehicle": ("" if type(vehicle) is not str else vehicle),
                 "group": ("" if type(group) is not str else group),
                 "keyRoute" :([] if type(keyRoute) is not list else keyRoute),
-                "keyTask":("" if type(keyTask) is not str else keyTask)
+                "keyTask":("" if type(keyTask) is not str else keyTask),
+                "label": ("" if type(label) is not str else label)
             }
             )            
         print(datas)
