@@ -108,7 +108,7 @@ class rbklib:
             self.so_19301 = socket.socket()
             self.so_19301.connect((self.ip, 19301))
             self.pushThreadFlag = True
-            self.pushData = Queue(30)
+            self.pushData = Queue(10)
             thread = threading.Thread(target=self.robot_push)
             thread.setDaemon(True)
             thread.start()
