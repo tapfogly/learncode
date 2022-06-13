@@ -1,3 +1,4 @@
+import threading
 from datetime import datetime
 import socket
 import json
@@ -5,6 +6,7 @@ import time
 import struct
 import math
 import os
+from queue import Queue
 from typing import Any, Union
 import time
 
@@ -59,7 +61,7 @@ def normalize_theta(theta):
 
 
 class rbklib:
-    def __init__(self, ip, core_flag=False) -> None:
+    def __init__(self, ip, core_flag=False, push_flag=False) -> None:
         self.ip = ip
         try:
             # 机器人状态 socket
@@ -101,10 +103,15 @@ class rbklib:
             self.so_19210.settimeout(5)
         except:
             self.so_19210 = None
-        # # 机器人推送 socket
-        # self.so_19301 = socket.socket()
-        # self.so_19301.connect((self.ip, 19301))
-        # self.so_19301.settimeout(5)
+        # 机器人推送 socket
+        if push_flag:
+            self.so_19301 = socket.socket()
+            self.so_19301.connect((self.ip, 19301))
+            self.pushThreadFlag = True
+            self.pushData = Queue(30)
+            thread = threading.Thread(target=self.robot_push)
+            thread.setDaemon(True)
+            thread.start()
 
     def __del__(self):
         if self.so_19204 != None:
@@ -392,6 +399,8 @@ class rbklib:
             so = self.so_19207
         elif 6000 <= msgType < 7000:
             so = self.so_19210
+        elif msgType == 9300:
+            so = self.so_19301
         else:
             # 如果报文类型不在范围内，则抛出异常
             raise ValueError("没有与报文类型对应的socket,或者需要指定一个socket")
@@ -1788,6 +1797,52 @@ class rbklib:
         :param desc: 货物描述
         """
         return self.request(6804, 1, {"goods_id": goods_id, "container_name": container_name, "desc": desc})
+
+    # 以下是机器人推送API
+    def robot_push_config_req(self, interval: int = None, included_fields: list[str] = None,
+                              excluded_fields: list[str] = None) -> tuple[tuple, bytes]:
+        """
+        配置推送端口 19301\n
+        include_fields 和 exclude_fields 不可同时设置
+
+        :param interval: 消息推送时间间隔（ms）
+        :param included_fields: 设置消息中包含的字段
+        :param excluded_fields: 设置消息中排除的字段
+        """
+
+        d = {}
+        if interval is not None:
+            d["interval"] = interval
+        if included_fields is not None:
+            d["included_fields"] = included_fields
+        if excluded_fields is not None:
+            d["excluded_fields"] = excluded_fields
+        return self.request(9300, 1, d)
+
+    def robot_push(self):
+        """
+        机器人推送API
+        """
+
+        while self.pushThreadFlag:
+            # 接收报文头
+            headData = self.so_19301.recv(16)
+            # 解析报文头
+            header = struct.unpack(PACK_FMT_STR, headData)
+            # 获取报文体长度
+            bodyLen = header[3]
+            readSize = 1024
+            recvData = b''
+            while (bodyLen > 0):
+                recv = self.so_19301.recv(readSize)
+                recvData += recv
+                bodyLen -= len(recv)
+                if bodyLen < readSize:
+                    readSize = bodyLen
+            if self.pushData.full():
+                self.pushData.get()
+            self.pushData.put(recvData)
+
 
 
 if __name__ == "__main__":
