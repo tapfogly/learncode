@@ -35,10 +35,11 @@ def excelData():
 # 读取sqlite数据库
 def sqlData():
     db = r"D:\code\python\AutoTest\TEST_示例\TEST_导航\test_data.db"
-    conn = sqlite3.connect(db)
-    cursor = conn.cursor()
-    cursor.execute("select station from gotarget")
-    return "station", [line[0] for line in cursor.fetchall()]
+    with sqlite3.connect(db) as conn:
+        cursor = conn.cursor()
+        cursor.execute("select station from gotarget")
+        lst = [line[0] for line in cursor.fetchall()]
+    return "station", lst
 
 
 class Test_导航测试1:

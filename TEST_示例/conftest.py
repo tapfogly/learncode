@@ -12,12 +12,6 @@ sys.path.append("..")
 from APILib.codingLib import CodingLib
 from APILib.rbklib import rbklib
 
-# 判断配置文件是否存在
-cfgExist = os.path.exists("config.ini")
-if cfgExist:
-    cf = configparser.ConfigParser()
-    cf.read("config.ini", encoding="utf-8")
-
 
 # 增加命令行参数
 def pytest_addoption(parser):
@@ -41,6 +35,27 @@ def pytest_addoption(parser):
 
 # 会话开始前，检查命令行参数，记录时间，创建 CODING 实例
 def pytest_sessionstart(session):
+    global cfgExist
+    global title
+    global tester
+    global cf
+    global startTime
+    global coding
+    title = session.config.getoption("--title")
+    tester = session.config.getoption("--tester")
+    # 判断配置文件是否存在
+    cfgExist = os.path.exists("config.ini")
+    if cfgExist:
+        cf = configparser.ConfigParser()
+        cf.read("config.ini", encoding="utf-8")
+    # 报告标题
+    if not title and cfgExist:
+        title = cf["MetaData"]["Title"]
+    else:
+        title = "Test Report"
+    # 测试者姓名
+    if not tester and cfgExist:
+        tester = cf["MetaData"]["Tester"]
     if not session.config.getoption("--enable-coding"):
         return
     token = session.config.getoption("--token")
@@ -51,10 +66,8 @@ def pytest_sessionstart(session):
         client_id = cf["CODING"]["ClientId"]
         client_secret = cf["CODING"]["ClientSecret"]
     # 记录测试开始时间
-    global startTime
     startTime = time.time()
     # 判断是否指定了CODING OAuth2.0 ID、密钥、令牌，创建 CODING 实例
-    global coding
     if token:
         coding = CodingLib(token)
     elif client_id and client_secret:
@@ -78,7 +91,8 @@ def pytest_sessionfinish(session, exitstatus):
         data.update({"Passed": testPassed
                      , "Failed": session.testsfailed
                      , "SuccessRate": f"{testPassed / session.testscollected * 100:.2f} %"
-                     , "Duration": f"{time.time() - startTime:.2f} s"})
+                     , "Duration": f"{time.time() - startTime:.2f} s"
+                     , "Tester": tester})
         # 创建事项
         if cf["CODING"]["IssueMethod"] == "Create":
             md = coding.generateMarkdown(title, cf["Create"]["Description"], data)
@@ -106,31 +120,21 @@ def pytest_sessionfinish(session, exitstatus):
             print(res.text)
 
 
-@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+@pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
     report.description = str(item.function.__doc__)
 
 
-# 修改测试报告(添加标题、测试者)
+# 修改测试报告(添加标题)
 def pytest_html_report_title(report):
-    global title
-    title = report.config.getoption("--title")
-    tester = report.config.getoption("--tester")
-    # 修改报告标题
-    if title:
-        report.title = title
-    elif cfgExist:
-        title = cf["MetaData"]["Title"]
-        report.title = cf["MetaData"]["Title"]
-    else:
-        title = "Test Report"
-    # 添加测试者姓名
-    if tester:
-        report.config._metadata["Tester"] = tester
-    elif cfgExist:
-        report.config._metadata["Tester"] = cf["MetaData"]["Tester"]
+    report.title = title
+
+
+# 修改测试报告(添加测试者)
+def pytest_html_results_summary(prefix, summary, postfix):
+    prefix.extend([html.p(f"Tester: {tester}")])
 
 
 # 修改测试报告的表格头

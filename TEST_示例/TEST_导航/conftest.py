@@ -18,6 +18,7 @@ def classFixture(rbk):
     if not result:
         pytest.exit("初始化失败，请检查")
     yield
+    # 测试结束时执行（清理）
     rbk.robot_task_gotarget_req(id="AP32")
     result = False
     for i in range(40):
