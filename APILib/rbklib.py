@@ -61,7 +61,7 @@ def normalize_theta(theta):
 
 
 class rbklib:
-    def __init__(self, ip, core_flag=False, push_flag=False) -> None:
+    def __init__(self, ip, core_flag=False, push_flag=False, pushDataSize: int = 5) -> None:
         self.ip = ip
         try:
             # 机器人状态 socket
@@ -108,7 +108,7 @@ class rbklib:
             self.so_19301 = socket.socket()
             self.so_19301.connect((self.ip, 19301))
             self.pushThreadFlag = True
-            self.pushData = Queue(10)
+            self.pushData = Queue(pushDataSize)
             thread = threading.Thread(target=self.robot_push)
             thread.setDaemon(True)
             thread.start()
@@ -429,7 +429,7 @@ class rbklib:
         print(f"{'时间:':　>6}\t", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), sep='')
         print(f"{'报文类型:':　>6}\t{msgType}\t{msgType:#06X}")
         print(f"{'序号:':　>6}\t{reqId}\t{reqId:#06X}")
-        print(f"{'报文头:':　>6}\t{rawMsg.hex(' ')}")
+        print(f"{'报文头:':　>6}\t{rawMsg.hex(' ').upper()}")
         print(f"{'报文体长度:':　>6}\t{msgLen}\t{msgLen:#010X}")
         if msgLen == 0:
             print(f"{'报文体:':　>6}\t无")
@@ -463,7 +463,7 @@ class rbklib:
         print(f"{'时间:':　>6}\t", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), sep='')
         print(f"{'报文类型:':　>6}\t{header[4]}\t{header[4]:#06X}")
         print(f"{'序号:':　>6}\t{header[2]}\t{header[2]:#06X}")
-        print(f"{'报文头:':　>6}\t{headData.hex(' ')}")
+        print(f"{'报文头:':　>6}\t{headData.hex(' ').upper()}")
         print(f"{'报文体长度:':　>6}\t{header[3]}\t{header[3]:#010X}")
         print(f"{'报文体:':　>6}\t{recvData[:1000]}")
         if header[3] > 1000:

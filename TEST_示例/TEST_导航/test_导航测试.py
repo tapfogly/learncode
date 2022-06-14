@@ -58,12 +58,14 @@ class Test_导航测试1:
 
         # 执行检查是否到站点
         result = False
+        count = 0
         for i in range(40):
             body = json.loads(rbk.pushData.get())
-            print("current_station:", body.get("current_station"))
+            print(count,"current_station:", body.get("current_station"))
             if body.get("current_station") == station:
                 result = True
                 break
+            count += 1
             time.sleep(1)
         if not result:
             # 执行失败，打印错误信息
@@ -78,8 +80,9 @@ class Test_导航测试1:
         assert body.get("ret_code") == 0
         body = json.loads(rbk.pushData.get())
         result = False
+        count = 0
         for i in range(10):
-            print("errors:", body.get("errors"))
+            print(count, "errors:", body.get("errors"))
             if body["errors"][0]["desc"] == "can not find target id LM8888888":
                 result = True
                 break
