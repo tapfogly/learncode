@@ -291,10 +291,10 @@ class OrderLib:
         r = requests.post(self.ip + "/dispatchable", data=datas, headers=_orderLif_headers)
         return r    
 
-    def undispatchable_unignore(self, name, finished):
+    def undispatchable_unignore(self, name, finished = False):
         return self.dispatchable_org(name, "undispatchable_unignore", finished)
 
-    def undispatchable_ignore(self, name, finished):
+    def undispatchable_ignore(self, name, finished = False):
         return self.dispatchable_org(name, "undispatchable_ignore", finished)
 
     def dispatchable(self, name):
