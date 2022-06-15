@@ -49,5 +49,23 @@ def test_omni_path_fork():
             ORDER.terminateId(order_id)
             assert False, "has error {}".format(detail2['alarms']['errors'])
 
+def test_one_path_fork():
+    '''
+    单向线路上或者路径的规划
+    '''
+    init_pos("LM115", name = "AMB-01")
+    order_id = ORDER.gotoOrder(location="LM116")
+    while True:
+        time.sleep(0.5)
+        detail = ORDER.orderDetails(order_id)
+        # print(detail)
+        if detail["state"] == "FINISHED":
+            assert True
+            break
+        detail2 = ORDER.robotsStatus()
+        if len(detail2['alarms']['errors']) > 0:
+            ORDER.terminateId(order_id)
+            assert False, "has error {}".format(detail2['alarms']['errors'])
+
 if __name__ == "__main__":
-    pytest.main(["-k test_omni_path_fork", "-v", "--html=report.html", "--self-contained-html"])
+    pytest.main(["-v", "--html=report.html", "--self-contained-html"])
