@@ -57,20 +57,21 @@ class Test_导航测试1:
         # 当上一个断言为True时继续执行，否者用例执行失败不执行后续代码
 
         # 执行检查是否到站点
-        result = False
+        isComplete = False
         count = 0
         for i in range(40):
             body = json.loads(rbk.pushData.get())
-            print(count,"current_station:", body.get("current_station"))
-            if body.get("current_station") == station:
-                result = True
+            print(count, "当前站点:", body.get("current_station"), "任务状态:", body.get("task_status"))
+            if body.get("task_status") == 4:
+                isComplete = True
                 break
             count += 1
             time.sleep(1)
+        if not isComplete:
+            raise Exception("40秒内未完成任务")
+        result = body.get("current_station") == station
         if not result:
-            # 执行失败，打印错误信息
             print(f"fatals:{body.get('fatals')}\nerrors:{body.get('errors:')}\nwarnings:{body.get('warnings')}\n")
-        # 判断执行结果
         assert result
 
     @pytest.mark.notfind
@@ -86,5 +87,6 @@ class Test_导航测试1:
             if body["errors"][0]["desc"] == "can not find target id LM8888888":
                 result = True
                 break
+            count += 1
             time.sleep(1)
         assert result

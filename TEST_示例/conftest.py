@@ -120,10 +120,11 @@ def pytest_sessionfinish(session, exitstatus):
             print(res.text)
 
 
-@pytest.mark.hookwrapper
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
 def pytest_runtest_makereport(item, call):
-    outcome = yield
-    report = outcome.get_result()
+    # 获取钩子方法的调用结果
+    out = yield
+    report = out.get_result()
     report.description = str(item.function.__doc__)
 
 
