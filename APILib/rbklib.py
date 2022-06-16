@@ -109,7 +109,7 @@ class rbklib:
             self.so_19301.connect((self.ip, 19301))
             self.pushThreadFlag = True
             self.pushData = Queue(pushDataSize)
-            thread = threading.Thread(target=self.robot_push)
+            thread = threading.Thread(target=self._robot_push)
             thread.setDaemon(True)
             thread.start()
 
@@ -399,8 +399,6 @@ class rbklib:
             so = self.so_19207
         elif 6000 <= msgType < 7000:
             so = self.so_19210
-        elif msgType == 9300:
-            so = self.so_19301
         else:
             # 如果报文类型不在范围内，则抛出异常
             raise ValueError("没有与报文类型对应的socket,或者需要指定一个socket")
@@ -1800,7 +1798,7 @@ class rbklib:
 
     # 以下是机器人推送API
     def robot_push_config_req(self, interval: int = None, included_fields: list[str] = None,
-                              excluded_fields: list[str] = None) -> tuple[tuple, bytes]:
+                              excluded_fields: list[str] = None) -> dict:
         """
         配置推送端口 19301\n
         include_fields 和 exclude_fields 不可同时设置
@@ -1817,9 +1815,18 @@ class rbklib:
             d["included_fields"] = included_fields
         if excluded_fields is not None:
             d["excluded_fields"] = excluded_fields
-        return self.request(9300, 1, d)
+        if included_fields and excluded_fields:
+            raise ValueError("included_fields and excluded_fields can not be set at the same time")
+        if not d:
+            raise ValueError("interval, included_fields or excluded_fields must be set")
 
-    def robot_push(self):
+        body = bytearray(json.dumps(d), "ascii")
+        msgLen = len(body)
+        rawMsg = struct.pack(PACK_FMT_STR, 0x5A, 0x01, 1, msgLen, 9300, b'\x00\x00\x00\x00\x00\x00')
+        self.so_19301.send(rawMsg+body)
+        return json.loads(self.pushData.get())
+
+    def _robot_push(self):
         """
         机器人推送API
         """

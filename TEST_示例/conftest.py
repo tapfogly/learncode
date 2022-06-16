@@ -129,16 +129,23 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_collection_modifyitems(session, config, items: list):
     """ 收集测试用例后被调用，可以对测试用例进行修改，比如加标签、删除测试用例、对测试用例排序 """
 
-    # 示例 将最后一个测试用例放到最前面
-    # items.insert(0, items.pop())
+    # 示例1：删除指定名称的测试用例
+    # items = [item for item in items if "TEST_导航" not in item.name]
+    # 示例2：删除指定标签的测试用例
+    # items = [item for item in items if "notfind" not in item.keywords]
+    # 示例3：按照名称排序
+    # items = sorted(items, key=lambda item: item.name)
 
 
 def pytest_runtest_setup(item: Item):
     """ 每个测试用例执行前被调用，可以增加判断，排除某些测试用例 """
 
-    # 示例 跳过这些测试用例
-    # if "TEST_导航" in item.nodeid or "TEST_平动转动" in item.nodeid:
-    #     pytest.skip("skip")
+    # 示例1：跳过指定名称的测试用例
+    # if "TEST_导航" in item.name:
+    #     pytest.skip("指定的测试用例")
+    # 示例2：跳过指定标签的测试用例
+    # if "notfind" in item.keywords:
+    #     pytest.skip("指定的测试用例")
 
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
@@ -150,7 +157,7 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call":
         # 通过report.outcome来获取测试结果 [failed passed skipped]
 
-        # 示例 测试用例失败时，终止测试进程
+        # 测试用例失败时，终止测试进程
         # if report.outcome == "failed":
         #     pytest.exit(ExitCode.TESTS_FAILED)
 
@@ -193,6 +200,9 @@ def pytest_html_results_table_row(report, cells):
 @pytest.fixture(scope='session', autouse=True)
 def rbk():
     rbk = rbklib("58.34.177.163", push_flag=True)
+    d = rbk.robot_push_config_req(included_fields=["x", "y", "angle", "task_status", "current_station", "errors"])
+    if d.get("ret_code") != 0:
+        raise Exception("配置推送失败")
     # 抢占控制权
     rbk.robot_config_lock_req("Test")
     yield rbk

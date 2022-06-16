@@ -17,7 +17,5 @@ def init(rbk):
             break
         count += 1
         time.sleep(1)
-    if not isComplete:
-        raise Exception("40秒内未完成任务")
-    if body.get("current_station") != "AP29":
+    if not isComplete or body.get("current_station") != "AP29":
         raise Exception("初始化失败")
