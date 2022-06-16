@@ -1,4 +1,5 @@
 import datetime
+from _pytest.nodes import Item
 from py.xml import html
 import os
 import sys
@@ -12,6 +13,11 @@ sys.path.append("..")
 from APILib.codingLib import CodingLib
 from APILib.rbklib import rbklib
 
+########################################################################################################################
+#                                                                                                                      #
+#                                                 下面是 Hook                                                           #
+#                                                                                                                      #
+########################################################################################################################
 
 # 增加命令行参数
 def pytest_addoption(parser):
@@ -30,7 +36,7 @@ def pytest_addoption(parser):
     group.addoption("--client-id", help="CODING OAuth2.0 ID")
     group.addoption("--client-secret", help="CODING OAuth2.0 密钥")
     group.addoption("--token", help="CODING 个人授权令牌")
-    group.addoption("--enable-coding", type=bool, help="是否启用CODING")
+    group.addoption("--enable-coding", action="store_true", help="是否启用CODING")
 
 
 # 会话开始前，检查命令行参数，记录时间，创建 CODING 实例
@@ -120,12 +126,37 @@ def pytest_sessionfinish(session, exitstatus):
             print(res.text)
 
 
+def pytest_collection_modifyitems(session, config, items: list):
+    """ 收集测试用例后被调用，可以对测试用例进行修改，比如加标签、删除测试用例、对测试用例排序 """
+
+    # 示例 将最后一个测试用例放到最前面
+    # items.insert(0, items.pop())
+
+
+def pytest_runtest_setup(item: Item):
+    """ 每个测试用例执行前被调用，可以增加判断，排除某些测试用例 """
+
+    # 示例 跳过这些测试用例
+    # if "TEST_导航" in item.nodeid or "TEST_平动转动" in item.nodeid:
+    #     pytest.skip("skip")
+
+
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
 def pytest_runtest_makereport(item, call):
-    # 获取钩子方法的调用结果
+    """ 每个测试用例的setup call teardown时被调用，测试结果在 call 阶段被记录 """
+
     out = yield
     report = out.get_result()
-    report.description = str(item.function.__doc__)
+    if report.when == "call":
+        # 通过report.outcome来获取测试结果 [failed passed skipped]
+
+        # 示例 测试用例失败时，终止测试进程
+        # if report.outcome == "failed":
+        #     pytest.exit(ExitCode.TESTS_FAILED)
+
+        return
+    if report.when == "teardown":
+        report.description = str(item.function.__doc__)
 
 
 # 修改测试报告(添加标题)
@@ -154,7 +185,7 @@ def pytest_html_results_table_row(report, cells):
 
 ########################################################################################################################
 #                                                                                                                      #
-#                                                     固件写在下面　　　 　                                                #
+#                                                     下面是固件                                                         #
 #                                                                                                                      #
 ########################################################################################################################
 

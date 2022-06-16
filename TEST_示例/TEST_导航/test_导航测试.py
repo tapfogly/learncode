@@ -26,7 +26,7 @@ def excelData():
         table = xls.sheet_by_name("站点")
         # 获取行数
         for row in range(0, table.nrows):
-            #获取每行第一个单元格的数据
+            # 获取每行第一个单元格的数据
             cell_value = table.cell_value(row, 0)
             lst.append(cell_value)
     return "station", lst
