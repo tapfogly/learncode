@@ -199,7 +199,7 @@ def test_add_block_to_running_order():
          "operation": "JackUnload",
          },
     ]}
-    res = requests.post(f"{core.ip}/setOrder", data=json.dumps(order))
+    res = requests.post(f"{core.ip}/addBlocks", data=json.dumps(order))
     print(res.content)
     time.sleep(5)
     detail = core.orderDetails(order_id)
@@ -212,6 +212,7 @@ def test_add_block_to_running_order():
     # addBlocks
     add_block_req = {
         "id": order_id,
+        "priority":12345, # 被忽略
         "blocks": [{"blockId": str(uuid.uuid1()), "location": "AP28",
                    "operation": "JackLoad",
                     },]}
@@ -222,6 +223,8 @@ def test_add_block_to_running_order():
     res = requests.post(f"{core.ip}/markComplete", data = json.dumps(mark_complete_req))
     print(res.content)
     core.waitForOrderFinish(order_id)
+    state = core.orderDetails(order_id)['state']
+    assert state == "FINISHED"
 
 
 if __name__ == "__main__":
