@@ -2,6 +2,8 @@ import laserData1
 import laserData3
 import laserLocal1
 import laserLocal2
+import laserRotate0
+import laserRotate1
 # import pytest
 import sys
 import os
@@ -14,6 +16,7 @@ from APILib.rbklib import *
 import matplotlib.pyplot as plt
 
 RBK = rbklib(getIP())
+OVER_TIME = 30
 
 def setup_module():
     RBK.lock()
@@ -43,8 +46,17 @@ def test_path():
     RBK.moveRobot(pos)
     data = {"id":"LM6"}
     RBK.sendTask(data)
-    # plt.plot(x,y,'.')
-    # plt.show()
+    t0 = time.time()
+    while True:
+        time.sleep(0.5)
+        dt = time.time() - t0
+        if dt > OVER_TIME:
+            assert False, " over time f{OVER_TIME}"
+        ts = r.getTaskStatus()
+        status = ts["task_status"] 
+        if status == 4:
+            assert True, " task finished"
+            break
 
 def test_narrow_path():
     RBK.clearSimLaser()
@@ -56,8 +68,17 @@ def test_narrow_path():
     RBK.moveRobot(pos)
     data = {"id":"AP17"}
     RBK.sendTask(data)
-    # plt.plot(x,y,'.')
-    # plt.show()
+    t0 = time.time()
+    while True:
+        time.sleep(0.5)
+        dt = time.time() - t0
+        if dt > OVER_TIME:
+            assert False, " over time f{OVER_TIME}"
+        ts = r.getTaskStatus()
+        status = ts["task_status"] 
+        if status == 4:
+            assert True, " task finished"
+            break
 
 def test_local():
     RBK.clearSimLaser()
@@ -75,9 +96,44 @@ def test_local():
     RBK.clearSimLaser()
     time.sleep(0.5)
     RBK.setSimLaser(laserLocal1.x, laserLocal1.y)
-    # plt.plot(x,y,'.')
-    # plt.show()
+    t0 = time.time()
+    while True:
+        time.sleep(0.5)
+        dt = time.time() - t0
+        if dt > OVER_TIME:
+            assert False, " over time f{OVER_TIME}"
+        ts = r.getTaskStatus()
+        status = ts["task_status"] 
+        if status == 4:
+            assert True, " task finished"
+            break
+
+def test_rotate():
+    RBK.modifyParam({
+        "MoveFactory": {
+            "ObsExpansion": 0.05,
+        }
+    })
+    RBK.clearSimLaser()
+    time.sleep(0.5)
+    # RBK.setSimLaser(laserRotate0.x, laserRotate0.y)
+    RBK.setSimLaser(laserRotate1.x, laserRotate1.y)
+    pos = {"x":12.473572,"y":4.34269,"angle":174.494668}
+    RBK.moveRobot(pos)
+    data = {"id": "LM5"}
+    RBK.sendTask(data)
+    t0 = time.time()
+    while True:
+        time.sleep(0.5)
+        dt = time.time() - t0
+        if dt > OVER_TIME:
+            assert False, " over time f{OVER_TIME}"
+        ts = RBK.getTaskStatus()
+        status = ts["task_status"] 
+        if status == 4:
+            assert True, " task finished"
+            break
 
 if __name__ == "__main__":
     setup_module()
-    test_local()
+    test_rotate()

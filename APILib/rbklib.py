@@ -797,6 +797,9 @@ class rbklib:
         :param map_name: 	需要查询子地图的母地图名字
         """
         return self.request(1802, 1, {"map_name": map_name})
+    
+    def robot_status_sound_req(self) -> tuple[tuple, bytes]:
+        return self.request(1850)
 
     # 以下是机器人控制API
     # 机器人控制 API 主要用于发送开环的控制指令
@@ -1854,8 +1857,9 @@ class rbklib:
 
 if __name__ == "__main__":
     r = rbklib(ip = "192.168.133.135")
+    print(r.robot_status_sound_req())
     # r.robot_config_uploadmap_req(mapPath = "F:/SDK/rbk/AutoTest/test_rbk/test_avoid/aps-d2-saw.smap")
-    r.robot_control_loadmap_req(map_name = "aps-d2-saw")
+    # r.robot_control_loadmap_req(map_name = "aps-d2-saw")
     # r.lock()
     # data = {"RBKSim":{"RBKSimMinVx":0.5}}
     # r.modifyParam(data = data)

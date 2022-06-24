@@ -141,7 +141,7 @@ class OrderLib:
             time.sleep(sleepTime)
         return uuid
 
-    def simpleOrder(self, fromLoc, toLoc, goodsdId):
+    def simpleOrder(self, fromLoc, toLoc, goodsdId = None, vehicle = None):
         uuid = getUUID()
         datas = json.dumps(
         {
@@ -149,6 +149,7 @@ class OrderLib:
             "toLoc":toLoc,
             "id": uuid,
             "goodsId":("" if type(goodsdId) is not str else goodsdId),
+            "vehicle": ("" if type(vehicle) is not str else vehicle)
         }
         )
         print(datas)
@@ -384,6 +385,10 @@ class OrderLib:
         r = requests.get(self.ip +"/robotsStatus")
         return r.json()
     
+    def getCoreError(self):
+        rs = self.robotsStatus()
+        return rs['alarms']['errors']
+        
     def robotStatus(self, vehicle_id:str):
         data = dict()
         rs = self.robotsStatus()
@@ -440,8 +445,10 @@ class OrderLib:
         return r
 if __name__ == "__main__":
     order = OrderLib(getServerAddr())
-    order.disableDoor(names = ["Door-01"], disabled = False)
-    order.disableLift(names = ["Lift-01"], disabled = False)
+    order.locked()
+    order.gotoOrder(location= "LM314")
+    # order.disableDoor(names = ["Door-01"], disabled = False)
+    # order.disableLift(names = ["Lift-01"], disabled = False)
     # order.recoveryParam()
     # data = {
     #     "RDSDispatcher":{
