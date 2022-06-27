@@ -6,18 +6,38 @@ import time
 import subprocess
 import multiprocessing
 import rbklib
+from typing import List
+
+def getConfigValue(key:str)->str:
+    p = os.path.dirname(__file__)
+    p = os.path.dirname(p)
+    config_path = os.path.join(p, "config.json")
+    with open(config_path, "r") as f:
+        j = json.load(f)
+        return j.get(key,"")
+
 
 def getServerAddr()->str:
     """获取服务器的地址
     Returns:
         str: 服务器地址
     """
-    p = os.path.dirname(__file__)
-    p = os.path.dirname(p)
-    config_path = os.path.join(p, "config.json")
-    with open(config_path, "r") as f:
-        j = json.load(f)
-        return j.get("rdscore_addr","")
+    return getConfigValue("rdscore_addr")
+
+def getDataDir()->str:
+    '''获取数据目录的绝对路径
+    Returns:
+        str: 数据目录路径
+    '''
+    return getConfigValue("rdscore_data_dir")
+    # todo 验证是否存在文件夹
+
+def getExeDir()->str:
+    '''获取rbk.exe所在目录的绝对路径
+    Returns:
+        str: rbk.exe目录路径
+    '''
+    return getConfigValue("rdscore_exe_dir")
 
 _orderLif_headers = {'Content-Type': 'application/json'}
 
@@ -46,10 +66,7 @@ def getLogAfterT(fdir = None, t0 = None):
     return out_log
 
 def openRDSCore(rdsDir = None):
-    rdir = os.path.join(rdsDir, "bin")
-    rdir = os.path.join(rdir,"win64")
-    core_dir = os.path.join(rdir,"rbk.exe")
-    subprocess.run(core_dir, cwd = rdir)
+    subprocess.call("rbk.exe", cwd = rdsDir, shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 def runRDSCore(rdsDir = None):
     p1 = multiprocessing.Process(target = openRDSCore, args=(rdsDir,))
@@ -72,6 +89,8 @@ def getLeasetLog(fdir = None):
     tf = os.path.join(fdir, log_dict[0][1])
     print(tf)
     return tf
+
+
 class OrderLib:
     def __init__(self, ip) -> None:
         self.ip = ip
@@ -443,6 +462,39 @@ class OrderLib:
         )
         r = requests.post(self.ip+"/disableLift", data=datas, headers=_orderLif_headers)
         return r
+
+    def pagedQuery(self, path:str, page_num: int = None, page_size: int = None, order_by: str = None, order_method: str = None, relation: str = None, predicates: List[str] = None):
+        '''
+        page_num: 页数
+        page_size: 一页有多少条数据
+        order_by: 排序字段
+        order_method: 排序方式 descending ascending
+        relation: "AND" "OR"
+        predicates: [ ["field", "op", "value"], ["state", "EQ", "FINISHED"], ... ]
+            op: "GT", "LT", "EQ", "NE", "LIKE", "IN"
+        '''
+        data = json.dumps(
+            {
+                "relation": relation,
+                "predicates": predicates
+            })
+
+        params = {}
+        if page_num:
+            params['page_num'] = page_num
+        if page_size:
+            params['page_size'] = page_size
+        if order_by:
+            params['order_by'] = order_by
+        if order_method:
+            params['order_method'] = order_method
+        if relation and predicates:
+            params['where'] = data
+
+        r = requests.get(self.ip + "/"+path, params=params,
+                         headers=_orderLif_headers)
+        print(r.request.url)
+        return r.json()
 if __name__ == "__main__":
     order = OrderLib(getServerAddr())
     order.locked()

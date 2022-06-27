@@ -2,5 +2,8 @@
     "rbk_ip":"192.168.133.132", 
     "_comment_rbk_ip": "robot's ip",
     "rdscore_addr": "http://127.0.0.1:8088",
-    "_comment_rdscore_ip": "server's ip and port"
+    "_comment_rdscore_ip": "server's ip and port",
+    "rdscore_data_dir":"C:/.SeerRobotics/rdscore/resources",
+    "rdscore_exe_dir":"C:/projects/Core-SDK_windows3/0.1.8.22050603/bin/release/win64"
+
 }
