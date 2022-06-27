@@ -12,7 +12,7 @@ def init(rbk):
     for i in range(40):
         body = json.loads(rbk.pushData.get())
         print(count, "当前站点:", body.get("current_station"), "任务状态:", body.get("task_status"))
-        if body.get("task_status") == 4:
+        if body.get("task_status") == 4 and body.get("current_station") == "AP29":
             isComplete = True
             break
         count += 1

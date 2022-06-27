@@ -57,17 +57,15 @@ class Test_导航测试1:
         # 当上一个断言为True时继续执行，否者用例执行失败不执行后续代码
 
         # 执行检查是否到站点
-        isComplete = False
         count = 0
         for i in range(40):
             body = json.loads(rbk.pushData.get())
             print(count, "当前站点:", body.get("current_station"), "任务状态:", body.get("task_status"))
-            if body.get("task_status") == 4:
-                isComplete = True
+            if body.get("task_status") == 4 and body.get("current_station") == station:
                 break
             count += 1
             time.sleep(1)
-        if not isComplete:
+        if body.get("task_status") != 4:
             raise Exception("40秒内未完成任务")
         result = body.get("current_station") == station
         if not result:

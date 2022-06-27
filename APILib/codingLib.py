@@ -27,7 +27,7 @@ class CodingLib:
             self.headers["Authorization"] = "token " + self.token
         else:
             raise Exception("参数错误")
-        # coding统一api接口url
+        # coding 统一 api 接口 url
         self.apiUrl = 'https://e.coding.net/open-api'
 
     # 获取 access_token
@@ -38,7 +38,7 @@ class CodingLib:
                     f"redirect_uri=http://localhost:3000/callback&response_type=code"
         # 打开授权登录页面
         webbrowser.open(accessUrl)
-        # socket实现简单http服务器,接收授权码
+        # socket 实现简单 http 服务器,接收授权码
         httpServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         httpServer.bind(('', 3000))
         httpServer.listen(1)
@@ -46,7 +46,7 @@ class CodingLib:
         recv = sock.recv(1024)
         params = recv.decode("ascii").split()[1].split('?')[1].split('&')
         code = None
-        # 找出code
+        # 找出 code
         for param in params:
             if param.startswith("code="):
                 code = param.split('=')[1]
@@ -78,19 +78,15 @@ class CodingLib:
             res = requests.get("https://seer-group.coding.net/api/me?access_token=" + self.accessToken)
         return res
 
-    # 获取项目内所有成员id
+    # 获取项目内所有成员 id
     def getProjectMemberIds(self, projectName: str):
-        # 查询项目ID
+        # 查询项目 ID
         res = self.describeProjectByName(projectName)
         # 查询项目成员
         res = self.describeProjectMembers(res.json()["Response"]["Project"]["Id"], 1, 1000)
-        # 成员字典
-        memberIds = {}
-        for i in res.json()["Response"]["Data"]["ProjectMembers"]:
-            memberIds[i["Id"]] = i["Name"]
-        return memberIds
+        return {i["Id"]: i["Name"] for i in res.json()["Response"]["Data"]["ProjectMembers"]}
 
-    # 生成markdown
+    # 生成 markdown
     @staticmethod
     def generateMarkdown(title: str, content: str, d: dict):
         # 标题
@@ -446,6 +442,7 @@ class CodingLib:
 if __name__ == '__main__':
     cd = CodingLib("")
     memberIds = cd.getProjectMemberIds("test_center")
-    with open("测试中心成员ID.txt", "w", encoding="utf-8") as f:
-        for k, v in memberIds.items():
-            f.write(f"{k}:{v}\n")
+    print(memberIds)
+    # with open("测试中心成员ID.txt", "w", encoding="utf-8") as f:
+    #     for k, v in memberIds.items():
+    #         f.write(f"{k}:{v}\n")

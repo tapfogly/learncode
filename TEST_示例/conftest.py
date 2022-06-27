@@ -1,5 +1,4 @@
 import datetime
-from _pytest.nodes import Item
 from py.xml import html
 import os
 import sys
@@ -7,6 +6,8 @@ import time
 import configparser
 import webbrowser
 import pytest
+from _pytest.nodes import Item
+from _pytest.reports import TestReport
 from _pytest.config import ExitCode
 
 sys.path.append("..")
@@ -87,7 +88,7 @@ def pytest_sessionfinish(session, exitstatus):
     report = session.config.getoption("--html")
     if report:
         webbrowser.open(report)
-    # 如果没有启用CODING，则不上传测试报告
+    # 如果没有启用 CODING，则不上传测试报告
     if not session.config.getoption("--enable-coding"):
         return
     if coding and cfgExist and report and (exitstatus == ExitCode.OK or exitstatus == ExitCode.TESTS_FAILED):
@@ -153,9 +154,11 @@ def pytest_runtest_makereport(item, call):
     """ 每个测试用例的setup call teardown时被调用，测试结果在 call 阶段被记录 """
 
     out = yield
-    report = out.get_result()
+    report: TestReport = out.get_result()
+    # if report.when == "setup":
+    #     pass
     if report.when == "call":
-        # 通过report.outcome来获取测试结果 [failed passed skipped]
+        # 通过 report.outcome 来获取测试结果 [failed passed skipped]
 
         # 测试用例失败时，终止测试进程
         # if report.outcome == "failed":
@@ -163,7 +166,8 @@ def pytest_runtest_makereport(item, call):
 
         return
     if report.when == "teardown":
-        report.description = str(item.function.__doc__)
+        report.user_properties.append(item.function.__doc__)
+        report.user_properties.append(datetime.datetime.utcnow())
 
 
 # 修改测试报告(添加标题)
@@ -185,8 +189,9 @@ def pytest_html_results_table_header(cells):
 
 # 修改测试报告的表格内容
 def pytest_html_results_table_row(report, cells):
-    cells.insert(2, html.td(report.description))
-    cells.insert(3, html.td(datetime.datetime.utcnow(), class_='col-time'))
+    if report.user_properties:
+        cells.insert(2, html.td(report.user_properties[0]))
+        cells.insert(3, html.td(report.user_properties[1], class_='col-time'))
     cells.pop()
 
 
@@ -199,7 +204,7 @@ def pytest_html_results_table_row(report, cells):
 
 @pytest.fixture(scope='session', autouse=True)
 def rbk():
-    rbk = rbklib("58.34.177.163", push_flag=True)
+    rbk = rbklib("192.168.9.69", push_flag=True)
     d = rbk.robot_push_config_req(included_fields=["x", "y", "angle", "task_status", "current_station", "errors"])
     if d.get("ret_code") != 0:
         raise Exception("配置推送失败")

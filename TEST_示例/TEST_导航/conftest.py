@@ -8,12 +8,13 @@ def classFixture(rbk):
     # 测试开始时执行（初始化）
     # 让小车回到初始位置
     rbk.robot_task_gotarget_req(id="AP30")
+    time.sleep(5)
     isComplete = False
     count = 0
     for i in range(40):
         body = json.loads(rbk.pushData.get())
         print(count, "当前站点:", body.get("current_station"), "任务状态:", body.get("task_status"))
-        if body.get("task_status") == 4:
+        if body.get("task_status") == 4 and body.get("current_station") == "AP30":
             isComplete = True
             break
         count += 1
@@ -28,7 +29,7 @@ def classFixture(rbk):
     for i in range(40):
         body = json.loads(rbk.pushData.get())
         print(count, "当前站点:", body.get("current_station"), "任务状态:", body.get("task_status"))
-        if body.get("task_status") == 4:
+        if body.get("task_status") == 4 and body.get("current_station") == "AP32":
             isComplete = True
             break
         count += 1
