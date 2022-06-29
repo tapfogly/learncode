@@ -20,7 +20,7 @@ def setup_module():
     p = os.path.join(p, "rds_20220601233537.zip")
     core.uploadScene(p)
     core.modifyParam({"RDSDispatcher": {
-        "clearDBOnStart":True
+        "ClearDBOnStart":True
     }})
     time.sleep(5)
     # todo restart core
@@ -185,7 +185,6 @@ def test_no_label_and_group_conflict_simple_order():
     detail = core.orderDetails(order_id)
     assert detail['state'] == 'FINISHED'
 
-
 def test_add_block_to_running_order():
     '''
     向已经处于RUNNING状态的订单添加block
@@ -225,6 +224,21 @@ def test_add_block_to_running_order():
     core.waitForOrderFinish(order_id)
     state = core.orderDetails(order_id)['state']
     assert state == "FINISHED"
+
+def test_no_block_no_key_route():
+    '''order_issue_pool#574: 支持下单时不发 keyRoute 和 block ，后续添加动作块的使用方式
+    '''
+    order_id = str(uuid.uuid1())
+    order = {"id":order_id, "complete":False}
+    res = requests.post(core.ip+'/setOrder', data=json.dumps(order))
+    core.waitForOrderFinishTimeout(order_id)
+
+    # addBlock
+    core.addBlock(order_id, location="PS-1-5")
+    core.markComplete(order_id)
+    core.waitForOrderFinish(order_id)
+    detail = core.orderDetails(order_id)
+    assert detail['state'] == "FINISHED"
 
 
 if __name__ == "__main__":
