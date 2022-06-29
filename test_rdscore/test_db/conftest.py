@@ -54,7 +54,7 @@ def replace_db(src_dir):
     db_dir = Path(getDataDir(), "db")
     print("db dir: " + str(db_dir.absolute()))
     kill_core()
-    time.sleep(5)
+    time.sleep(15)
     remove_sqlite_files_by_prefix("orders", db_dir)
     # copy
     path = Path(src_dir)

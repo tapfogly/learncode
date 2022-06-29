@@ -481,9 +481,9 @@ class OrderLib:
 
         params = {}
         if page_num:
-            params['page_num'] = page_num
+            params['page'] = page_num
         if page_size:
-            params['page_size'] = page_size
+            params['size'] = page_size
         if order_by:
             params['order_by'] = order_by
         if order_method:
@@ -493,7 +493,6 @@ class OrderLib:
 
         r = requests.get(self.ip + "/"+path, params=params,
                          headers=_orderLif_headers)
-        print(r.request.url)
         return r.json()
 if __name__ == "__main__":
     order = OrderLib(getServerAddr())
