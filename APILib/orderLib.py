@@ -242,6 +242,14 @@ class OrderLib:
             pass
         return out
 
+    def setOrderLabel(self, orderId, label):
+        r = requests.post(self.ip+"/setLabel",data=json.dumps({"id":orderId,"label":label}), headers = _orderLif_headers )
+        return r
+
+    def setOrderPriority(self, orderId, priority):
+        r = requests.post(self.ip + '/setPriority', data = json.dumps({"id":orderId, "priority":priority}), headers = _orderLif_headers)
+        return r
+
     def terminateAll(self,vehicle):
         if isinstance(vehicle, str):
             datas = json.dumps(

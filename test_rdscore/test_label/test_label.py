@@ -240,6 +240,8 @@ def test_no_block_no_key_route():
     detail = core.orderDetails(order_id)
     assert detail['state'] == "FINISHED"
 
+# todo 不发keyRoute, block但是已经complete的订单，状态应为STOPPED，error中写出原因
+
 
 if __name__ == "__main__":
     pytest.main(["-v", "--html=report.html", "--self-contained-html"])
