@@ -76,6 +76,7 @@ def test_door():
             assert True
             break
 
+
 def test_lift():
     """过电梯时禁用电梯
     """
@@ -115,7 +116,27 @@ def test_lift():
             assert True
             break
 
+def test_lift2():
+    """电梯所在互斥组被占用时，不会呼叫电梯
+    """
+    init_pos("LM117")
+    ORDER.modifyParam({"RDSDispatcher":{
+        "OpenLiftDist":99,
+        "AutoPark":False
+    }})
+    res = requests.post(ORDER.ip+'/getBlockGroup',data=json.dumps({"id":"TEST","blockGroup":[]}))
+    time.sleep(3)
+    order_id = ORDER.gotoOrder(vehicle="AMB-01", location="LM44")
+    # 机器人在LM178 停下
+    # todo 没有callLift
+    ORDER.waitForOrderFinishTimeout(order_id)
+    detail = ORDER.orderDetails(order_id)
+    assert detail['state'] == "RUNNING"
+    requests.post(ORDER.ip+'/releaseBlockGroup', data=json.dumps({"id":"TEST", "blockGroup":[]}))
 
+    ORDER.waitForOrderFinish(order_id)
+    detail = ORDER.orderDetails(order_id)
+    assert detail['state'] == "FINISHED"
 
 if __name__ == "__main__":
     pytest.main(["-v", "-x", "-s", "--html=report.html", "--self-contained-html"])
