@@ -356,6 +356,18 @@ class OrderLib:
         )
         r = requests.post(self.ip+"/gotoSiteCancel", data=datas, headers=_orderLif_headers)
         return r
+    def gotoSitePause(self, name):
+        if type(name) is not list:
+            name = [name]
+        datas = json.dumps({"vehicles":name})
+        r =requests.post(self.ip + '/gotoSitePause',data=datas,headers=_orderLif_headers)
+        return r
+    def gotoSiteResume(self, name):
+        if type(name) is not list:
+            name = [name]
+        datas = json.dumps({"vehicles":name})
+        r = requests.post(self.ip+'/gotoSiteResume', data=datas, headers = _orderLif_headers)
+        return r
     def uploadScene(self, name:str=""):
         p = os.path.dirname(__file__)
         p = os.path.dirname(p)
