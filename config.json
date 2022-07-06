@@ -1,5 +1,5 @@
 {
-    "rbk_ip":"192.168.133.132", 
+    "rbk_ip":"192.168.133.140", 
     "_comment_rbk_ip": "robot's ip",
     "rdscore_addr": "http://127.0.0.1:8088",
     "_comment_rdscore_ip": "server's ip and port",

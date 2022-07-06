@@ -401,7 +401,25 @@ class OrderLib:
             if time_elapsed > timeout:
                 print("waitForOrderFinish", uuid, out, status, "TIMEOUT")
                 return
- 
+    def isOrderFinished(self, uuid, timeout=30):
+        status = "RUNNING"
+        time_elapsed = 0
+        while status != "FINISHED" and status != "STOPPED" :
+            out = self.orderDetails(uuid)
+            if type(out) is dict and "state" in out:
+                status = out["state"]
+            print("isOrderFinished", uuid, out , status)
+            time.sleep(1)    
+            time_elapsed+=1
+            print(time_elapsed)
+            if time_elapsed > timeout:
+                print("TIMEOUT")
+                return False    
+            if status == "FINISHED":
+                return True
+            if status == "STOPPED":
+                return False
+
     def clearRobotAllError(self, name):
         if type(name) is not list:
             if name == "":
@@ -483,6 +501,38 @@ class OrderLib:
         r = requests.post(self.ip+"/disableLift", data=datas, headers=_orderLif_headers)
         return r
 
+    def disablePath(self, name:str):
+        datas = json.dumps(
+            {
+            "id": name
+            }
+        )
+        r = requests.post(self.ip+"/disablePath", data=datas, headers=_orderLif_headers)
+        return r        
+    def disablePoint(self, name:str):
+        datas = json.dumps(
+            {
+            "id": name
+            }
+        )
+        r = requests.post(self.ip+"/disablePoint", data=datas, headers=_orderLif_headers)
+        return r      
+    def enablePath(self, name:str):
+        datas = json.dumps(
+            {
+            "id": name
+            }
+        )
+        r = requests.post(self.ip+"/enablePath", data=datas, headers=_orderLif_headers)
+        return r      
+    def enablePoint(self, name:str):
+        datas = json.dumps(
+            {
+            "id": name
+            }
+        )
+        r = requests.post(self.ip+"/enablePoint", data=datas, headers=_orderLif_headers)
+        return r  
     def pagedQuery(self, path:str, page_num: int = None, page_size: int = None, order_by: str = None, order_method: str = None, relation: str = None, predicates: List[str] = None):
         '''
         page_num: 页数
