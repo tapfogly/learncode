@@ -9,10 +9,27 @@ import time
 import pytest
 import math
 
-def test_spin():
+RBK = rbklib(ip = getIP())
+
+def setup_module():
+    RBK.lock()
+    RBK.cancelTask()
+    RBK.robot_config_uploadmap_req(mapPath = "test_1.smap")
+    RBK.robot_control_loadmap_req(map_name = "test_1")
+    RBK.robot_config_model_req(modelPath = "robot.model")
+    RBK.recoveryParam()
+    RBK.modifyParam({
+                "MoveFactory": {
+                    "ObsStopDist": 0,
+                    "Load_ObsStopDist": 0,
+                    "UnloadSpin": True
+                }
+            })
+
+def test_spin1():
     """ 测试两个线路货物朝向不同，agv要停下来，旋转好货物朝向再走
     """
-    r = rbklib(ip = getIP())
+    r = RBK
     rpos = {"x":-2.158, "y":-1.679, "angle":90.} # agv初始化位置
     r.lock()
     time.sleep(1.0)
@@ -68,7 +85,7 @@ def test_spin():
 def test_spin2():
     """测试两个线路货物朝向相同，agv不要停下来，旋转好货物朝向再走
     """
-    r = rbklib(ip = getIP())
+    r = RBK
     rpos = {"x":-2.158, "y":-1.679, "angle":90.} # agv初始化位置
     r.lock()
     time.sleep(1.0)
@@ -130,7 +147,7 @@ def test_spin2():
 def test_spin3():
     """测试两个线路，没有指明货物方向，因此中间不需要停下来
     """
-    r = rbklib(ip = getIP())
+    r = RBK
     rpos = {"x":4.076, "y":-1.679, "angle":90.} # agv初始化位置
     r.lock()
     time.sleep(1.0)
