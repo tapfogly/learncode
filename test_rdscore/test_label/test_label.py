@@ -240,6 +240,26 @@ def test_no_block_no_key_route():
     detail = core.orderDetails(order_id)
     assert detail['state'] == "FINISHED"
 
+def test_SELF_POSITION():
+    '''
+    有group， block 中的 loc 为 SELF_POSITION，有 keyRoute
+    '''
+    order_id = core.gotoOrder(group = "g1",location = "SELF_POSITION", keyRoute="AP16")
+    core.waitForOrderFinish(order_id)
+    detail = core.orderDetails(order_id)
+    print(detail['state'] )
+    assert detail['state'] == 'FINISHED'
+
+def test_ONLY_SELF_POSITION():
+    '''
+    有group， block 中的 loc 为 SELF_POSITION
+    '''
+    order_id = core.gotoOrder(group = "g1",location = "SELF_POSITION")
+    core.waitForOrderFinish(order_id)
+    detail = core.orderDetails(order_id)
+    print(detail['state'] )
+    assert detail['state'] == 'STOPPED'
+
 # todo 不发keyRoute, block但是已经complete的订单，状态应为STOPPED，error中写出原因
 
 

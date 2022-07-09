@@ -103,5 +103,33 @@ def test_disablePath3():
     detail = ORDER.orderDetails(orderId = o1)
     assert detail["state"] == "FAILED", "state = {}".format(detail["state"])
 
+def test_getDisablePath():
+    """查询当前禁用线路
+    """
+    ORDER.enablePath(name="all")
+    ORDER.enablePoint(name="all")
+    time.sleep(1)
+    ORDER.disablePath(name = "AP15-LM58")
+    ORDER.disablePath(name = "LM58-LM54")
+    time.sleep(2)
+    d = ORDER.getDisablePaths()
+    v = [{"id":'LM58-LM54'}, {"id":'AP15-LM58'}]
+    print(d,v)
+    assert d == v
+
+def test_getDisablePoint():
+    """查询当前禁用线路
+    """
+    ORDER.enablePath(name="all")
+    ORDER.enablePoint(name="all")
+    time.sleep(1)
+    ORDER.disablePoint(name = "AP15")
+    ORDER.disablePoint(name = "LM54")
+    time.sleep(2)
+    d = ORDER.getDisablePoints()
+    v = [{"id":'LM54'}, {"id":'AP15'}]
+    print(d, v)
+    assert d == v
+
 if __name__ == '__main__':
-    pytest.main(["-v", "-k test_disablePoint2", "--html=report.html", "--self-contained-html"])
+    pytest.main(["-v","--html=report.html", "--self-contained-html"])

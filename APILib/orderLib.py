@@ -533,6 +533,12 @@ class OrderLib:
         )
         r = requests.post(self.ip+"/enablePoint", data=datas, headers=_orderLif_headers)
         return r  
+    def getDisablePoints(self):
+        r = requests.get(self.ip + "/getDisablePoints", headers=_orderLif_headers)
+        return r.json()
+    def getDisablePaths(self):
+        r = requests.get(self.ip + "/getDisablePaths", headers=_orderLif_headers)
+        return r.json()
     def pagedQuery(self, path:str, page_num: int = None, page_size: int = None, order_by: str = None, order_method: str = None, relation: str = None, predicates: List[str] = None):
         '''
         page_num: 页数
