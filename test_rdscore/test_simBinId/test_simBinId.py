@@ -5,59 +5,48 @@ import sys
 sys.path.append("../..")
 from APILib.orderLib import *
 
-ORDER = OrderLib(getServerAddr())
 
-
-def setup_module():
-    global ORDER
-    p = os.path.abspath(__file__)
-    p = os.path.dirname(p)
-    p = os.path.join(p, "scene.zip")
-    ORDER.uploadScene(p)
-    ORDER.modifyParam({"RDSDispatcher":{"ClearDBOnStart":True}, "ClearOldOrdersDisabled":True})
-    time.sleep(5)
-
-
-def test_simBinId():
+def test_simBinId(core):
     """
     发送id为库位名的任务
     """
-    oid = ORDER.gotoOrder(location="A008-1")
+    oid = core.gotoOrder(location="A008-1")
     time.sleep(2)
-    o = ORDER.orderDetails(orderId=oid)
-    ORDER.waitForOrderFinishTimeout(oid, 400)
-    o = ORDER.orderDetails(orderId=oid)
+    o = core.orderDetails(orderId=oid)
+    core.waitForOrderFinishTimeout(oid, 400)
+    o = core.orderDetails(orderId=oid)
     assert o['state'] == "FINISHED"
 
 v = "AMB-201"
-def reset_pos():
-    ORDER.updateSimRobotState(json.dumps({"vehicle_id":v, "position_by_name":"LM217"}))
+
+def reset_pos(core):
+    core.updateSimRobotState(json.dumps({"vehicle_id":v, "position_by_name":"LM217"}))
     time.sleep(2)
 
-def test_simPause():
+def test_simPause(core):
     """
     测试仿真机器人暂停
     """
-    ORDER.terminateAll(v)
+    core.terminateAll(v)
     time.sleep(5)
-    ORDER.dispatchable(v)
-    reset_pos()
-    oid = ORDER.gotoOrder(location="AP101", vehicle=v)
+    core.dispatchable(v)
+    reset_pos(core)
+    oid = core.gotoOrder(location="AP101", vehicle=v)
     time.sleep(2)
-    o = ORDER.orderDetails(orderId=oid)
+    o = core.orderDetails(orderId=oid)
     while o['state'] != "RUNNING":
         time.sleep(2)
-        o = ORDER.orderDetails(orderId=oid)
+        o = core.orderDetails(orderId=oid)
 
-    ORDER.gotoSitePause(v)
+    core.gotoSitePause(v)
     time.sleep(10)
-    o = ORDER.robotStatus(v)
+    o = core.robotStatus(v)
 
     assert o['rbk_report']['task_status'] == 3
 
-    ORDER.gotoSiteResume(v)
-    ORDER.waitForOrderFinishTimeout(oid, 200)
-    o = ORDER.orderDetails(oid)
+    core.gotoSiteResume(v)
+    core.waitForOrderFinishTimeout(oid, 200)
+    o = core.orderDetails(oid)
     assert o['state'] == "FINISHED"
 
 
