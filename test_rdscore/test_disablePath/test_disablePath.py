@@ -9,6 +9,7 @@ sys.path.append(p)
 from APILib.orderLib import *
 
 ORDER = OrderLib(getServerAddr())
+ORDER.recoveryParam()
 
 def setup_module():
     """执行这个脚本的用例前需要的准备内容
@@ -129,6 +130,8 @@ def test_getDisablePoint():
     d = ORDER.getDisablePoints()
     v = [{"id":'LM54'}, {"id":'AP15'}]
     print(d, v)
+    ORDER.enablePath(name="all")
+    ORDER.enablePoint(name="all")
     assert d == v
 
 if __name__ == '__main__':

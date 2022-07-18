@@ -111,6 +111,13 @@ def test_2():
             assert True
         else:
             assert False, "cannot work. order status is {}".format(O["state"])
+def test_3():
+    """ 指定机器人去一个不存在的点
+    """
+    o1 = ORDER.gotoOrder(vehicle="BR-03", location="LM419")
+    time.sleep(1)
+    d = ORDER.orderDetails(orderId = o1)
+    assert d["state"] == "STOPPED"
 
 if __name__ == "__main__":
     pytest.main(["-v", "--html=report.html", "--self-contained-html"])
