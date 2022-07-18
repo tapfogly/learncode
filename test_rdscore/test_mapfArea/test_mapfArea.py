@@ -1,12 +1,16 @@
 # order_issue_pool#443 的测试用例
 import json
 import sys
-sys.path.append("../..")
+import os
+p = os.path.abspath(__file__)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+p = os.path.dirname(p)
+sys.path.append(p)
 from APILib.orderLib import *
 import time
 from multiprocessing import freeze_support
 import pytest
-import requests
 
 ORDER = OrderLib(getServerAddr())
 
@@ -56,25 +60,14 @@ def setup_module():
     time.sleep(5)
 
 def test_1():
-    """ 检查是否有52122的报错
-    """
-    rs = ORDER.robotsStatus()
-    for e in rs["alarms"]["errors"]:
-        if e["code"] == 52122:
-            assert False, "failed. has error {}".format(e)
-    assert True
-
-def test_2():
     """ 测试能否正常运行
     """
     ORDER.recoveryParam()
     ORDER.modifyParam({"RDSDispatcher":{
         "ClearDBOnStart":True,
         "G-MAPF":True,
-        "G-MAPF-Leaves":True,
         "G-MAPF-Physical":True,
         "G-MAPF-Vision":80,
-        "G-MAPF-GroupDistance":10,
         }})
     init_pos()
     post=PostData()
@@ -120,7 +113,7 @@ def test_3():
     assert d["state"] == "STOPPED"
 
 if __name__ == "__main__":
-    pytest.main(["-v", "--html=report.html", "--self-contained-html"])
+    test_1()
 
 
 
