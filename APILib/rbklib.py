@@ -627,7 +627,8 @@ class rbklib:
         查询机器人当前的调度状态\n
         弃用
         """
-        pass
+        # pass
+        return self.request(1030)
 
     def robot_status_motor_req(self, motor_names   = None)  :
         """
@@ -742,6 +743,14 @@ class rbklib:
         """
         return self.request(1500)
 
+    def robot_status_transparent_req() :
+        '''
+        查询透传的数据信息
+        '''
+        pass 
+        
+    
+
     def robot_status_canframe_req(self)  :
         """
         查询驱动器参数
@@ -757,6 +766,12 @@ class rbklib:
         if id:
             return self.request(1760, 1, {"id": id})
         return self.request(1760)
+
+    def robot_status_gnsslist_req(self) :
+        '''
+        查询机器人 GNSS 设备列表
+        '''
+        return self.request(1761)
 
     def robot_status_downloadfile_req(self, type: str = "", file_path: str = "")  :
         """
