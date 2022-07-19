@@ -259,5 +259,5 @@ def test_20():
 if __name__ == "__main__":
     # maybe fail: 
     # 3
-    test_20()
+    test_8()
 
