@@ -743,7 +743,7 @@ class rbklib:
         """
         return self.request(1500)
 
-    def robot_status_transparent_req() :
+    def robot_status_transparent_req(self) :
         '''
         查询透传的数据信息
         '''
