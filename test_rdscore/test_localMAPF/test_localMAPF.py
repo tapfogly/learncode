@@ -45,10 +45,14 @@ def test_1():
         "G-MAPF-OnlyArea":True,
         "G-MAPF-MovablePark":True,
         }})
-    ORDER.dispatchable(name = ["sim_04", "sim_05"])
+    ORDER.terminateAll(vehicle = ["sim_03", "sim_04", "sim_05"])
+    ORDER.dispatchable(name = ["sim_03", "sim_04", "sim_05"])
+    init_pos(loc = "PP31", name="sim_04")
+    init_pos(loc = "AP10", name="sim_05")
+    init_pos(loc = "PP51", name="sim_03")
     o2 = ORDER.gotoOrder(vehicle="sim_05",location="CP1")
-    time.sleep(20)
-    o3 = ORDER.gotoOrder(vehicle="sim_05",location="AP5")
+    time.sleep(1)
+    o3 = ORDER.gotoOrder(vehicle="sim_05",location="PP51")
     time.sleep(20)
     ORDER.modifyParam({"RDSDispatcher":{
         "G-MAPF-OnlyArea":False,
