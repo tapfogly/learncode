@@ -906,8 +906,21 @@ class rbklib:
         """
         return self.request(2024, 1, {"name": name})
 
+    def robot_config_upload_and_loadmap_req(self, file_path: str):
+        '''
+        上传并切换载入地图
+        file_path: 上传文件的 路径+文件名字
+        '''
+        with open(file_path, "rb") as f:
+            file = f.read()
+            f.close()
+        return self.request(2025, 1, file)
+    
+
     # 以下是机器人导航 API
     # 机器人导航 API 主要用于发送导航相关的指令。
+
+    
 
     def robot_task_pause_req(self)  :
         """
