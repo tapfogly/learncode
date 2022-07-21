@@ -1410,6 +1410,13 @@ class rbklib:
         """
         return self.request(4803)
 
+    def robot_config_clear_odo_req(self):
+        '''
+        运位信息复位
+        设置后将累计里程，今日累计里程，累计运行时间，本次运行时间清零
+        '''
+        return self.request(4450)
+
     # 以下是其他 API
     # 其他 API 包含各种杂项，如播放音频、DO 控制、货叉控制、辊筒皮带控制等。
 
