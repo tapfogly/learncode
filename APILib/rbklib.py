@@ -1429,6 +1429,12 @@ class rbklib:
         """
         return self.request(6000, 1, {"name": name, "loop": loop})
 
+    def robot_other_update_transparent_data_req(self, **kwargs):
+        """
+        更新透传数据
+        """
+        return self.request(6900, 1, kwargs)
+
     def robot_other_setdo_req(self, id: int, status: bool)  :
         """
         设置 DO\n
