@@ -249,6 +249,14 @@ class rbklib:
         sim_laser = {"sim":{"setLaser":pos}}
         self.sendTask(sim_laser)
 
+    def stopMotor(self, s):
+        sim = {"sim":{"stopMotor":s}}
+        self.sendTask(sim)        
+    
+    def enableMotor(self, s):
+        sim = {"sim":{"enableMotor":s}}
+        self.sendTask(sim) 
+
     def clearSimLaser(self):
         sim_laser = {"sim":{"clearLaser":True}}
         self.sendTask(sim_laser)

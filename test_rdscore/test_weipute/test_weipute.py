@@ -174,7 +174,7 @@ def test_13():
     ORDER.terminateAll(vehicle = ["AMB-01", "AMB-02"])
     time.sleep(2)
     init_pos(loc = "LM172", name="AMB-01")
-    init_pos(loc = "AP47", name="AMB-02")
+    init_pos(loc = "AP47", name="AMB-02", a = 1.57)
     ORDER.dispatchable(name = ["AMB-01", "AMB-02"])
     o1 = ORDER.gotoOrder(vehicle="AMB-01",location="AP28")
     o2 = ORDER.gotoOrder(vehicle="AMB-02",location="AP132")
@@ -256,8 +256,19 @@ def test_20():
     o1 = ORDER.gotoOrder(vehicle="AMB-01",location="CP134")
     o2 = ORDER.gotoOrder(vehicle="AMB-02",location="PP50")
 
+def test_21():
+    """ 
+    """
+    ORDER.terminateAll(vehicle = ["AMB-01", "AMB-02"])
+    time.sleep(2)
+    init_pos(loc = "LM169", name="AMB-01", a = -1.57)
+    init_pos(loc = "LM138", name="AMB-02", a = -1.57)
+    ORDER.dispatchable(name = ["AMB-01", "AMB-02"])
+    o1 = ORDER.gotoOrder(vehicle="AMB-01",location="AP68")
+    o2 = ORDER.gotoOrder(vehicle="AMB-02",location="AP45")
+
 if __name__ == "__main__":
     # maybe fail: 
-    # 3
-    test_8()
+    # 3,13,19,20
+    test_19()
 

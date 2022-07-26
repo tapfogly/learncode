@@ -441,7 +441,11 @@ class OrderLib:
     def robotsStatus(self):
         r = requests.get(self.ip +"/robotsStatus")
         return r.json()
-    
+    def getCurrentOrderId(self, vehicle_id:str):
+        rs = self.robotStatus(vehicle_id)
+        if "id" in rs["current_order"]:
+            return rs["current_order"]["id"]
+        return ""
     def getCoreError(self):
         rs = self.robotsStatus()
         return rs['alarms']['errors']
