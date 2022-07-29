@@ -267,8 +267,19 @@ def test_21():
     o1 = ORDER.gotoOrder(vehicle="AMB-01",location="AP68")
     o2 = ORDER.gotoOrder(vehicle="AMB-02",location="AP45")
 
+def test_22():
+    """ 
+    """
+    ORDER.terminateAll(vehicle = ["AMB-01", "AMB-02"])
+    time.sleep(2)
+    init_pos(loc = "LM145", name="AMB-01", a = -1.57)
+    init_pos(loc = "LM163", name="AMB-02", a = 0)
+    ORDER.dispatchable(name = ["AMB-01", "AMB-02"])
+    o2 = ORDER.gotoOrder(vehicle="AMB-02",location="CP134")
+    o1 = ORDER.gotoOrder(vehicle="AMB-01",location="AP7")
+
 if __name__ == "__main__":
     # maybe fail: 
     # 3,13,19,20
-    test_19()
+    test_22()
 
