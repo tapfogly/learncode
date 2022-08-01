@@ -36,7 +36,7 @@ def packMasg(reqId, msgType, msg={}):
         jsonStr = msg
     if (msg != {}):
         msgLen = len(jsonStr)
-    print(msgLen, "***************************")
+    # print(msgLen, "***************************")
     rawMsg = struct.pack(PACK_FMT_STR, 0x5A, 0x01, reqId, msgLen, msgType, b'\x00\x00\x00\x00\x00\x00')
     # print("{:02X} {:02X} {:04X} {:08X} {:04X}"
     # .format(0x5A, 0x01, reqId, msgLen, msgType))

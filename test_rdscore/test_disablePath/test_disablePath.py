@@ -132,7 +132,7 @@ def test_getDisablePoint():
     print(d, v)
     ORDER.enablePath(name="all")
     ORDER.enablePoint(name="all")
-    assert d == v
+    assert d == v or d == [v[1], v[0]]
 
 if __name__ == '__main__':
     pytest.main(["-v","--html=report.html", "--self-contained-html"])
