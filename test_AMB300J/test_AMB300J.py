@@ -13,10 +13,23 @@ from APILib.rbklib import *
 import json
 import time
 
-r = rbklib("192.168.8.186", push_flag=True)
+def setup_module():
+    open_ip = None
+    model = None
+    s_id = None
+    task_position = None
+    with open("config.json", "r") as f:
+        body = json.loads(f.read())
+        open_ip = body["ip"]
+        model = body["model_name"]
+        s_id = body["source_id"]
+        task_position = body["id"]
+    return open_ip, model, s_id, task_position
 
-source_id = "LM2250"
-task_position = "LM1605"
+
+ip, model_name, source_id, task_position = setup_module()
+r = rbklib(ip, push_flag=True)
+r.robot_config_lock_req("test_robot")
 
 
 def test_robot_task_go1():
@@ -384,3 +397,7 @@ def test_rssi():
     rssi_value = json.loads(r.pushData.get())["rssi"]
     dbm = rssi_value - 100
     assert dbm >= -65, "网络信号强度低于-65"
+
+
+r.robot_config_unlock_req()
+
