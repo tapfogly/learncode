@@ -2,7 +2,6 @@
 测试需要添加该目录下的机器人模型和地图文件
 """
 
-import json
 import math
 import sys
 
@@ -12,6 +11,7 @@ sys.path.append("..")
 from APILib.rbklib import *
 import json
 import time
+
 
 def setup_module():
     open_ip = None
@@ -37,7 +37,7 @@ def test_robot_task_go1():
     纯固定路径导航
     接口详情 https://seer-group.yuque.com/pf4yvd/ruzsiq/asupc6
     '''
-
+    r.lock()
     d = {
         "source_id": source_id,
         "id": task_position,
@@ -60,7 +60,7 @@ def test_robot_task_go1():
             break
     body = json.loads(r.pushData.get())
     assert body["current_station"] == task_position, "导航命令执行有误，站点不匹配"
-    time.sleep(2)
+
 
 
 def test_robot_turn():
@@ -93,29 +93,21 @@ def test_robot_turn():
             continue
         elif body["task_status"] == 4:
             break
-        elif body["task_status"] == 5:
-            # 任务失败
-            assert False
-        elif body["task_status"] == 6:
-            # 任务取消
-            assert True
+
     new_rad = json.loads(r.pushData.get())["angle"]
     abs_angle = abs(new_rad - old_rad)
     if new_rad > math.pi:
         abs_angle = 2 * math.pi - abs_angle
     if rad > math.pi:
         abs_angle = 2 * math.pi - abs_angle
-    assert -0.01 < abs_angle - rad < 0.01
-    time.sleep(2)
+    assert -0.017 < abs_angle - rad < 0.017
+
 
 def test_point_center():
     '''
     运动到点精度
     '''
 
-    '''
-    机器人运动到目标点
-    '''
     d = {
         "source_id": task_position,
         "id": source_id,
@@ -142,8 +134,6 @@ def test_point_center():
         elif ed_time - st_time >= 20:
             # 任务超时
             assert False
-        else:
-            assert False
 
     '''
     获取机器人当前的位置信息
@@ -152,7 +142,7 @@ def test_point_center():
     body = json.loads(body)
     assert body["ret_code"] == 0, f"{body['err_msg']}"
     x1, y1 = body["x"], body["y"]
-
+    print("x1 = ", x1, " y1", y1)
     '''
     查询目标点信息
     '''
@@ -161,7 +151,6 @@ def test_point_center():
     assert body["ret_code"] == 0, f"{body['err_msg']}"
     x2, y2 = None, None
     for i in range(len(body["stations"])):
-
         if body["stations"][i]["id"] == source_id:
             x2 = body["stations"][i]["x"]
             y2 = body["stations"][i]["y"]
@@ -169,190 +158,258 @@ def test_point_center():
     assert 0.01 >= abs(x2 - x1) and 0.01 >= abs(y2 - y1)
     time.sleep(2)
 
-def test_spin1():
-    """ 测试两个线路货物朝向不同，agv要停下来，旋转好货物朝向再走
-    """
-    time.sleep(3)
-    r.modifyParam({
-        "MoveFactory": {
-            "ObsStopDist": 0,
-            "Load_ObsStopDist": 0,
-            "UnloadSpin": True
-        }
-    })
-    rpos = {"x": -2.158, "y": -1.679, "angle": 90.}  # agv初始化位置
 
-    time.sleep(1.0)
-    r.clearErrors()
-    r.cancelTask()
-    pos = {"sim": {"setPos": rpos}}
-    r.sendTask(pos)  # 让机器人在所在位置
-    r.moveLoc(rpos)  # 让agv定位在相同位置
-    task_cmd = {
-        "id": "SELF_POSITION",
-        "operation": "JackLoad",
-        "recfile": "shelf/s0002.shelf"
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
-    task_cmd = {
-        "skill_name": "GoByOdometer",
-        "global_spin_angle": 0,
-        "spin_direction": 0,
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
+# def test_spin1():
+#     """ 测试两个线路货物朝向不同，agv要停下来，旋转好货物朝向再走
+#     """
+#     time.sleep(3)
+#     r.modifyParam({
+#         "MoveFactory": {
+#             "ObsStopDist": 0,
+#             "Load_ObsStopDist": 0,
+#             "UnloadSpin": True
+#         }
+#     })
+#     # rpos = {"x": -2.158, "y": -1.679, "angle": 90.}  # agv初始化位置
+#     #
+#     # time.sleep(1.0)
+#     # r.clearErrors()
+#     # r.cancelTask()
+#     # pos = {"sim": {"setPos": rpos}}
+#     # r.sendTask(pos)  # 让机器人在所在位置
+#     # r.moveLoc(rpos)  # 让agv定位在相同位置
+#     r.lock()
+#     task_cmd = {
+#         "id": "SELF_POSITION",
+#         "operation": "JackLoad",
+#         "recfile": "shelf/s0002.shelf"
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#     task_cmd = {
+#         "skill_name": "GoByOdometer",
+#         "global_spin_angle": 0,
+#         "spin_direction": 0,
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#
+#     task_cmd = {
+#         "id": task_position
+#     }
+#     r.sendTask(task_cmd)  # 发送任务
+#     while True:
+#         ts = r.getTaskStatus()
+#         if ts["target_id"] == task_position:
+#             status = ts["task_status"]
+#             if status == 4:
+#                 break
+#             vel = r.getVel()
+#             pos = r.getPos()
+#             goods_dir = normalize_theta(vel["spin"] + pos["angle"])
+#             print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
+#             print(goods_dir + math.pi / 2)
+#             if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
+#                 r.cancelTask()
+#             assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
+#     assert True
 
-    task_cmd = {
-        "id": "AP1622"
-    }
-    r.sendTask(task_cmd)  # 发送任务
-    while True:
-        ts = r.getTaskStatus()
-        if ts["target_id"] == "AP1622":
-            status = ts["task_status"]
-            if status == 4:
-                break
-            vel = r.getVel()
-            pos = r.getPos()
-            goods_dir = normalize_theta(vel["spin"] + pos["angle"])
-            print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
-            if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
-                r.cancelTask()
-                assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
-    assert True
 
-def test_spin2():
-    """测试两个线路货物朝向相同，agv不要停下来，旋转好货物朝向再走
-    """
-    rpos = {"x": -2.158, "y": -1.679, "angle": 90.}  # agv初始化位置
+# def test_spin2():
+#     """测试两个线路货物朝向相同，agv不要停下来，旋转好货物朝向再走
+#     """
+#     # rpos = {"x": -2.158, "y": -1.679, "angle": 90.}  # agv初始化位置
+#     #
+#     # time.sleep(1.0)
+#     # r.clearErrors()
+#     # r.cancelTask()
+#     # pos = {"sim": {"setPos": rpos}}
+#     # r.sendTask(pos)  # 让机器人在所在位置
+#     # r.moveLoc(rpos)  # 让agv定位在相同位置
+#     r.lock()
+#     task_cmd = {
+#         "id": "SELF_POSITION",
+#         "operation": "JackLoad",
+#         "recfile": "shelf/s0002.shelf"
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#     task_cmd = {
+#         "skill_name": "GoByOdometer",
+#         "global_spin_angle": -1.57,
+#         "spin_direction": 0,
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#     task_cmd = {
+#         "id": task_position
+#     }
+#     r.sendTask(task_cmd)  # 发送任务
+#     time.sleep(1.0)
+#     first_in = True
+#     while True:
+#         ts = r.getTaskStatus()
+#         if ts["target_id"] == task_position:
+#             status = ts["task_status"]
+#             if status == 4:
+#                 break
+#             vel = r.getVel()
+#             pos = r.getPos()
+#             goods_dir = normalize_theta(vel["spin"] + pos["angle"])
+#             print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
+#             if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
+#                 r.cancelTask()
+#                 assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
+#             if first_in:
+#                 first_in = False
+#                 if vel["r_vx"] < 0.1:
+#                     r.cancelTask()
+#                     assert False, "stop at start during goto AP1622".format(vel["r_vx"])
+#     assert True
+#
+# def test_spin3():
+#     """测试两个线路，没有指明货物方向，因此中间不需要停下来
+#     """
+#     rpos = {"x": 4.076, "y": -1.679, "angle": 90.}  # agv初始化位置
+#
+#     time.sleep(1.0)
+#     r.clearErrors()
+#     r.cancelTask()
+#     pos = {"sim": {"setPos": rpos}}
+#     r.sendTask(pos)  # 让机器人在所在位置
+#     r.moveLoc(rpos)  # 让agv定位在相同位置
+#     task_cmd = {
+#         "id": "SELF_POSITION",
+#         "operation": "JackLoad",
+#         "recfile": "shelf/s0002.shelf"
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#     task_cmd = {
+#         "skill_name": "GoByOdometer",
+#         "global_spin_angle": -1.57,
+#         "spin_direction": 0,
+#     }
+#     r.sendTask(task_cmd)
+#     time.sleep(1.0)
+#     while True:
+#         ts = r.getTaskStatus()
+#         status = ts["task_status"]
+#         if status == 4:
+#             break
+#     task_cmd = {
+#         "id": "LM1591"
+#     }
+#     r.sendTask(task_cmd)  # 发送任务
+#     time.sleep(1.0)
+#     first_in = True
+#     while True:
+#         ts = r.getTaskStatus()
+#         if ts["target_id"] == "LM1591":
+#             status = ts["task_status"]
+#             if status == 4:
+#                 break
+#             vel = r.getVel()
+#             pos = r.getPos()
+#             goods_dir = normalize_theta(vel["spin"] + pos["angle"])
+#             # print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
+#             if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
+#                 r.cancelTask()
+#                 assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
+#             if first_in:
+#                 first_in = False
+#                 if vel["r_vx"] < 0.1:
+#                     r.cancelTask()
+#                     assert False, "stop at start during goto AP1622".format(vel["r_vx"])
+#     assert True
 
-    time.sleep(1.0)
-    r.clearErrors()
-    r.cancelTask()
-    pos = {"sim": {"setPos": rpos}}
-    r.sendTask(pos)  # 让机器人在所在位置
-    r.moveLoc(rpos)  # 让agv定位在相同位置
-    task_cmd = {
-        "id": "SELF_POSITION",
-        "operation": "JackLoad",
-        "recfile": "shelf/s0002.shelf"
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
-    task_cmd = {
-        "skill_name": "GoByOdometer",
-        "global_spin_angle": -1.57,
-        "spin_direction": 0,
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
-    task_cmd = {
-        "id": "AP1622"
-    }
-    r.sendTask(task_cmd)  # 发送任务
-    time.sleep(1.0)
-    first_in = True
-    while True:
-        ts = r.getTaskStatus()
-        if ts["target_id"] == "AP1622":
-            status = ts["task_status"]
-            if status == 4:
-                break
-            vel = r.getVel()
-            pos = r.getPos()
-            goods_dir = normalize_theta(vel["spin"] + pos["angle"])
-            print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
-            if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
-                r.cancelTask()
-                assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
-            if first_in:
-                first_in = False
-                if vel["r_vx"] < 0.1:
-                    r.cancelTask()
-                    assert False, "stop at start during goto AP1622".format(vel["r_vx"])
-    assert True
-
-def test_spin3():
-    """测试两个线路，没有指明货物方向，因此中间不需要停下来
-    """
-    rpos = {"x": 4.076, "y": -1.679, "angle": 90.}  # agv初始化位置
-
-    time.sleep(1.0)
-    r.clearErrors()
-    r.cancelTask()
-    pos = {"sim": {"setPos": rpos}}
-    r.sendTask(pos)  # 让机器人在所在位置
-    r.moveLoc(rpos)  # 让agv定位在相同位置
-    task_cmd = {
-        "id": "SELF_POSITION",
-        "operation": "JackLoad",
-        "recfile": "shelf/s0002.shelf"
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
-    task_cmd = {
-        "skill_name": "GoByOdometer",
-        "global_spin_angle": -1.57,
-        "spin_direction": 0,
-    }
-    r.sendTask(task_cmd)
-    time.sleep(1.0)
-    while True:
-        ts = r.getTaskStatus()
-        status = ts["task_status"]
-        if status == 4:
-            break
-    task_cmd = {
-        "id": "LM1591"
-    }
-    r.sendTask(task_cmd)  # 发送任务
-    time.sleep(1.0)
-    first_in = True
-    while True:
-        ts = r.getTaskStatus()
-        if ts["target_id"] == "LM1591":
-            status = ts["task_status"]
-            if status == 4:
-                break
-            vel = r.getVel()
-            pos = r.getPos()
-            goods_dir = normalize_theta(vel["spin"] + pos["angle"])
-            # print("goods_dir: ", goods_dir, vel["spin"], pos["angle"])
-            if vel["r_vx"] > 0.1 and math.fabs(goods_dir + math.pi / 2.0) > 0.1:
-                r.cancelTask()
-                assert False, "go with spin {}, {}".format(vel["r_vx"], goods_dir)
-            if first_in:
-                first_in = False
-                if vel["r_vx"] < 0.1:
-                    r.cancelTask()
-                    assert False, "stop at start during goto AP1622".format(vel["r_vx"])
-    assert True
+# def test_spin():
+#
+#     r.lock()
+#     task_cmd = {
+#         "id": "SELF_POSITION",
+#         "operation": "JackLoad",
+#         "recfile": "shelf/s0002.shelf"
+#     }
+#     head, body = r.robot_task_gotarget_req(**task_cmd)
+#     body = json.loads(body)
+#     assert body["ret_code"] == 0
+#
+#     st_time = time.time()
+#     while True:
+#         body = json.loads(r.pushData.get())
+#         ed_time = time.time()
+#
+#         if body["task_status"] == 4:
+#             break
+#         elif ed_time - st_time >= 20:
+#             # 任务超时
+#             assert False
+#
+#     task_cmd = {
+#         "skill_name": "GoByOdometer",
+#         "global_spin_angle": 1.57,
+#         "spin_direction": 0,
+#     }
+#     head, body = r.robot_task_gotarget_req(**task_cmd)
+#     body = json.loads(body)
+#     assert body["ret_code"] == 0
+#
+#     st_time = time.time()
+#     while True:
+#         body = json.loads(r.pushData.get())
+#         ed_time = time.time()
+#
+#         if body["task_status"] == 4:
+#             break
+#         elif ed_time - st_time >= 20:
+#             # 任务超时
+#             assert False
+#
+#     d = {
+#         "id": task_position,
+#         "operation": "JackUnload"
+#     }
+#     head, body = r.robot_task_gotarget_req(**d)
+#     body = json.loads(body)
+#     assert body["ret_code"] == 0
+#
+#     st_time = time.time()
+#     while True:
+#         body = json.loads(r.pushData.get())
+#         ed_time = time.time()
+#         if body["task_status"] == 4:
+#             break
+#         elif ed_time - st_time >= 20:
+#             # 任务超时
+#             assert False
+#     vel = r.getVel()["spin"]
+#     assert abs(vel - 1.57) <= 0.0009
 
 
 """=============================================================================
@@ -364,10 +421,12 @@ def test_jack_height():
     '''
     检查顶升高度
     '''
+
     head, body = r.robot_status_model_req()
-    device_type = json.loads(body)["deviceTypes"]
-    # print(body["deviceTypes"])
-    height = None
+    body = json.loads(body)
+    device_type = body["deviceTypes"]
+
+    ok = True
     for i in range(len(device_type)):
         if device_type[i]["name"] == "jack":
             param = device_type[i]["devices"]
@@ -382,12 +441,13 @@ def test_jack_height():
                                     param = com[z]["params"]
                                     for w in range(len(param)):
                                         if param[w]["key"] == "maxHeight":
-                                            height = param[w]["doubleValue"]
-    if height >= 0.06:
-        print("高度超过0.06， 实际高度=", height)
-        assert False
-    else:
-        assert True
+                                            if param[w]["doubleValue"] >= 0.06:
+                                                # param[w]["doubleValue"] = 0.05
+                                                # ok = False
+                                                assert False
+                                            else:
+                                                assert True
+
 
 
 def test_rssi():
@@ -397,7 +457,3 @@ def test_rssi():
     rssi_value = json.loads(r.pushData.get())["rssi"]
     dbm = rssi_value - 100
     assert dbm >= -65, "网络信号强度低于-65"
-
-
-
-
