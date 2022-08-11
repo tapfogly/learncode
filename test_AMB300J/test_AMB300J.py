@@ -382,7 +382,7 @@ def test_jack_height():
                                     param = com[z]["params"]
                                     for w in range(len(param)):
                                         if param[w]["key"] == "maxHeight":
-                                            height = param[w]["doubleMaxvalue"]
+                                            height = param[w]["doubleValue"]
     if height >= 0.06:
         print("高度超过0.06， 实际高度=", height)
         assert False
@@ -399,5 +399,5 @@ def test_rssi():
     assert dbm >= -65, "网络信号强度低于-65"
 
 
-r.robot_config_unlock_req()
+
 
