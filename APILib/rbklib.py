@@ -61,7 +61,7 @@ def normalize_theta(theta):
 
 
 class rbklib:
-    def __init__(self, ip, core_flag=False, push_flag=False, pushDataSize: int = 5) -> None:
+    def __init__(self, ip, core_flag=False, push_flag=False, pushDataSize: int = 1) -> None:
         self.ip = ip
         try:
             # 机器人状态 socket
