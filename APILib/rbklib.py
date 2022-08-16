@@ -463,6 +463,7 @@ class rbklib:
             bodyLen -= len(recv)
             if bodyLen < readSize:
                 readSize = bodyLen
+        data = recvData[:header[3]]
         ################################################################################################################
         # 打印响应报文信息
         print("*" * 20, "响应信息", "*" * 20)
@@ -471,12 +472,12 @@ class rbklib:
         print(f"{'序号:':　>6}\t{header[2]}\t{header[2]:#06X}")
         print(f"{'报文头:':　>6}\t{headData.hex(' ').upper()}")
         print(f"{'报文体长度:':　>6}\t{header[3]}\t{header[3]:#010X}")
-        print(f"{'报文体:':　>6}\t{recvData[:1000]}")
+        print(f"{'报文体:':　>6}\t{data[:1000]}")
         if header[3] > 1000:
             print("...")
         print()
         ################################################################################################################
-        return header, recvData
+        return header, data
 
     # 以下是查询机器人状态API
     # 机器人状态 API 用于查询机器人的所有状态量。
