@@ -457,3 +457,7 @@ def test_rssi():
     rssi_value = json.loads(r.pushData.get())["rssi"]
     dbm = rssi_value - 100
     assert dbm >= -65, "网络信号强度低于-65"
+
+
+if __name__ == '__main__':
+    pytest.main(["-v", "--html=report.html", "--self-contained-html"])
