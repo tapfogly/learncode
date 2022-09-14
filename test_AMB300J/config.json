@@ -2,5 +2,6 @@
     "ip": "192.168.9.60",
     "model_name": "AMB-150",
     "source_id": "AP25",
-    "id": "AP27"
+    "id": "AP27",
+    "charger_name": ""
 }
