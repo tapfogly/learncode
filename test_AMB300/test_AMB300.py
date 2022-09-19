@@ -919,8 +919,9 @@ def test_softemc():
     body = json.loads(body)
     assert body["ret_code"] == 0, f"{body['err_msg']}"
 
-    new_status = json.loads(r.pushData.get())["soft_emc"]
-    assert status == new_status
+    head, body = r.robot_status_emergency_req()
+    body = json.loads(body)
+    assert status == body["soft_emc"]
 
     head, body = r.robot_other_softemc_req(status=False)
     body = json.loads(body)
@@ -1077,7 +1078,6 @@ def test_robot_turn():
     assert -0.017 < rAngle - rad < 0.017
 
 
-
 def test_robot_translate():
     '''
     平动
@@ -1156,7 +1156,16 @@ def test_charge_start_time():
             body = json.loads(body)
             assert body["ret_code"] == 0
 
-#
+
+def test_rssi():
+    '''
+    获取网络信息强度
+    '''
+    rssi_value = json.loads(r.pushData.get())["rssi"]
+    dbm = rssi_value - 100
+    assert dbm >= -65, "网络信号强度低于-65"
+
+
 # def test_battery():
 #     """
 #     充电检查
