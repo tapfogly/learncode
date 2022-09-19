@@ -917,8 +917,9 @@ def test_softemc():
     body = json.loads(body)
     assert body["ret_code"] == 0, f"{body['err_msg']}"
 
-    new_status = json.loads(r.pushData.get())["soft_emc"]
-    assert status == new_status
+    head, body = r.robot_status_emergency_req()
+    body = json.loads(body)
+    assert status == body["soft_emc"]
 
     head, body = r.robot_other_softemc_req(status=False)
     body = json.loads(body)
