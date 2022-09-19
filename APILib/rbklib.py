@@ -756,7 +756,7 @@ class rbklib:
         '''
         查询透传的数据信息
         '''
-        pass 
+        return self.request(1900)
         
     
 
