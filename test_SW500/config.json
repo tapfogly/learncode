@@ -1,0 +1,9 @@
+{
+  "ip": "192.168.8.245",
+  "model_name": "WS500-phlips-prototype",
+  "source_id": "AP25",
+  "id": "AP28",
+  "charger_name": "CP34",
+  "JackLoad": "AP28",
+  "JackUnload": "AP32"
+}
