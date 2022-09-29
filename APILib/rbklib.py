@@ -67,7 +67,7 @@ class rbklib:
             # 机器人状态 socket
             self.so_19204 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.so_19204.connect((self.ip, 19204))
-            self.so_19204.settimeout(5)
+            self.so_19204.settimeout(60)
         except:
             self.so_19204 = None
         print("core_flag", core_flag)
@@ -76,14 +76,14 @@ class rbklib:
                 # 机器人控制 socket
                 self.so_19205 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.so_19205.connect((self.ip, 19205))
-                self.so_19205.settimeout(5)
+                self.so_19205.settimeout(60)
             except:
                 self.so_19205 = None
             try:
                 # 机器人导航 socket
                 self.so_19206 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.so_19206.connect((self.ip, 19206))
-                self.so_19206.settimeout(5)
+                self.so_19206.settimeout(60)
             except:
                 self.so_19206 = None
         else:
@@ -93,14 +93,14 @@ class rbklib:
             # 机器人配置 socket
             self.so_19207 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.so_19207.connect((self.ip, 19207))
-            self.so_19207.settimeout(5)
+            self.so_19207.settimeout(60)
         except:
             self.so_19207 = None
         try:
             # 其他 socket
             self.so_19210 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.so_19210.connect((self.ip, 19210))
-            self.so_19210.settimeout(5)
+            self.so_19210.settimeout(60)
         except:
             self.so_19210 = None
         # 机器人推送 socket
@@ -448,7 +448,7 @@ class rbklib:
         # 发送报文
         if msgLen > 0:
             rawMsg += body
-        so.send(rawMsg)
+        so.sendall(rawMsg)
         # 接收报文头
         headData = so.recv(16)
         # 解析报文头
@@ -1098,6 +1098,18 @@ class rbklib:
         :param name: 预存的任务链的名称(使用 Roboshop 上传)
         """
         return self.request(3106, 1, {"name": name})
+
+    def robot_tasklist_req(self, **kwargs)  :
+        """
+        执行发送任务链
+        """
+        return self.request(3100, 1, kwargs)
+
+    def robot_tasklist_cancel_req(self):
+        """
+        取消正在执行的任务链
+        """
+        return self.request(3104)
 
     # 以下是机器人配置 API
     # 机器人配置 API 用于配置机器人、切换地图等。
