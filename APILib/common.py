@@ -924,3 +924,13 @@ def audio(r):
     head, body = r.robot_other_stop_audio_req()
     body = json.loads(body)
     assert body["ret_code"] == 0
+
+
+def unlock(r):
+    """
+    释放控制权
+    接口详情 https://seer-group.yuque.com/pf4yvd/ruzsiq/lsb4m4
+    """
+    head, body = r.robot_config_unlock_req()
+    body = json.loads(body)
+    assert body["ret_code"] == 0
