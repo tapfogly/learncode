@@ -1,7 +1,10 @@
 {
-  "ip": "192.168.8.245",
+  "ip": "192.168.56.58",
   "model_name": "AMB-300J",
   "source_id": "AP28",
   "id": "AP25",
-  "charger_name": "CP34"
+  "charger_name": "CP34",
+  "volume": "60",
+  "user_name": "sr",
+  "pwd": "sr"
 }
